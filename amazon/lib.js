@@ -11,7 +11,7 @@ function checkZipCode(postalCode) {
     }
 }
 
-// Example: Muster Strasse 123a
+// Example: Muster Straße 123a
 function checkStreet(street) {
     var reg = /^([A-Za-zäößüÄÜÖ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
     if(reg.test(street)){
@@ -25,7 +25,7 @@ function checkStreet(street) {
     }
 }
 
-// Example: Muster Strasse | 123a
+// Example: Muster Straße | 123a
 function splitStreet(street) {
     if (!checkStreet(street)) {
         return null;
@@ -33,3 +33,17 @@ function splitStreet(street) {
         return [RegExp.$1, RegExp.$2];
     }
 }
+
+// Message show up
+function Toast(msg, duration){  
+    duration=isNaN(duration)?3000:duration;  
+    var m = document.createElement('div');  
+    m.innerHTML = msg;  
+    m.style.cssText="font-size: .32rem;color: rgb(255, 255, 255);background-color: rgba(0, 0, 0, 0.6);padding: 10px 15px;margin: 0 0 0 -60px;border-radius: 4px;position: fixed;    top: 50%;left: 50%;width: 430px;text-align: center;";
+    document.body.appendChild(m);  
+    setTimeout(function() {  
+        var d = 0.5;
+        m.style.opacity = '0';  
+        setTimeout(function() { document.body.removeChild(m) }, d * 1000);  
+    }, duration);  
+}  
