@@ -3,17 +3,15 @@ function checkZipCode(postalCode) {
     if(reg.test(postalCode)){
         return true;
     }else if(postalCode==""||postalCode.length==0){
-        alert("邮政编码为空");
         return false;
     }else{
-        alert("邮政编码解析失败");
         return false;
     }
 }
 
 // Example: Muster Straße 123a
 function checkStreet(street) {
-    var reg = /^([A-Za-zäößüÄÜÖ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
+    var reg = /^([A-Za-zäößüÄÜÖéÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
     if(reg.test(street)){
         return true;
     }else if(street==""||street.length==0){
@@ -31,6 +29,16 @@ function splitStreet(street) {
         return null;
     } else {
         return [RegExp.$1, RegExp.$2];
+    }
+}
+
+function highlight(keyword, targetDom, color) {
+    if (keyword != null ) {
+        var content = targetDom.innerHTML;
+        var arr = content.split(keyword);
+        if (arr.length == 2 ) {
+            targetDom.innerHTML = arr.join(`<span style="background:${color};">${keyword}</span>`);
+        }
     }
 }
 

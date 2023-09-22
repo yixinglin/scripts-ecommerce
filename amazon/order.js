@@ -5,6 +5,7 @@ function testAlert() {
 
 class GermanLike {
     constructor(dom) {
+        // this.countryMap = {"Amazon.de": "de", "Amazon.fr": "fr", "Amazon.it": "it", "Amazon.es": "es"};
         this.countryMap = {"Amazon.de": "de"};
         this.dom = dom;
     }
@@ -21,14 +22,20 @@ class GermanLike {
         return cbBtn;
     }
     parse() {
-        const lines = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]').childNodes; // Shipment
-        const dom2 = this.dom.querySelector('table.a-keyvalue'); // orderLines
-        const dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
+        var dom1 = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]'); // Shipment
+        var lines = dom1.childNodes
+        var dom2 = this.dom.querySelector('table.a-keyvalue'); // orderLines
+        var dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
         var pureLines = [];
         for ( var i=0; i<lines.length; i++ ) {
             pureLines.push(lines[i].innerText.trim());
         }
         pureLines.reverse();
+        // data preprocessing
+        if (!checkZipCode(pureLines[0]) && checkZipCode(pureLines[1])) {
+            pureLines.shift() // delete country line.
+        }
+
         var ele = pureLines[1]
         if (ele.indexOf(",") != -1) {
             pureLines.splice(1, 0, null)
@@ -41,6 +48,12 @@ class GermanLike {
         
         // zip, state, city, street, company, name
         var shipment = {};
+        const channel = dom3.textContent.trim();  
+        shipment.country = this.countryMap[channel];
+        if (shipment.country == undefined) {
+            throw new Error(`Country not in the whitelist: [${Object.keys(this.countryMap)}]`);
+        }
+
         const zip = pureLines[0];
         if (!checkZipCode(zip)) {
             throw new Error('ZipCode unrecognized!');
@@ -73,13 +86,19 @@ class GermanLike {
         const quantity = dom2.querySelectorAll('td')[4].innerText;
         const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
         shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
-        const channel = dom3.textContent.trim();
-        shipment.country = this.countryMap[channel];
-        if (shipment.country == undefined) {
-            throw new Error('Country not in the whitelist');
-        }
 
         shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
+        
+
+        highlight(shipment.name1, dom1, 'yellow');
+        highlight(shipment.name2, dom1, '#FFD700');
+        highlight(shipment.name3, dom1), '#EEB422';
+        highlight(shipment.city, dom1, '#BEBEBE');
+        highlight(shipment.zip, dom1, '#FFDEAD');
+        highlight(shipment.street, dom1, '#87CEEB');
+        highlight(shipment.houseNumber, dom1, '#54FF9F');
+        highlight(shipment.state, dom1, '#F4A460');
+        highlight(shipment.quantity, dom2, 'yellow');
         return shipment;
     }
 
