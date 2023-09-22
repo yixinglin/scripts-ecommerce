@@ -15,10 +15,8 @@ function checkStreet(street) {
     if(reg.test(street)){
         return true;
     }else if(street==""||street.length==0){
-        alert("街道为空");
         return false;
     }else{
-        alert("街道解析失败");
         return false;
     }
 }

@@ -1,0 +1,24 @@
+{
+    "shipperId": "2761216117 276a1970a0",
+    "references": ["Test - o22-123456789"],
+    "addresses": {
+        "delivery": {
+            "name1": "Test Name 1",
+            "name2": "Test Name 2",
+            "name3": "Test Name 3",
+            "street1": "Test Street 1",
+            "zipCode": "10100",
+            "city": "Berlin",
+            "province": "Berlin",
+            "country": "DE",
+            "email": "email@gls-email.de"
+        }
+    },
+    "parcels": [
+        {
+            "weight": 1,
+            "comment": "Note 1@Test"
+        }
+        
+    ]
+}

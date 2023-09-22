@@ -46,7 +46,7 @@ class GermanLike {
         }
         console.log(pureLines);
         
-        // zip, state, city, street, company, name
+        // zip, [state], city, street, company, name
         var shipment = {};
         const channel = dom3.textContent.trim();  
         shipment.country = this.countryMap[channel];
@@ -83,13 +83,11 @@ class GermanLike {
             shipment.name3 = null;
         }
 
-        const quantity = dom2.querySelectorAll('td')[4].innerText;
-        const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
-        shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
-
+        // const quantity = dom2.querySelectorAll('td')[4].innerText;
+        // const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
+        // shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
         shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
         
-
         highlight(shipment.name1, dom1, 'yellow');
         highlight(shipment.name2, dom1, '#FFD700');
         highlight(shipment.name3, dom1), '#EEB422';
@@ -98,7 +96,6 @@ class GermanLike {
         highlight(shipment.street, dom1, '#87CEEB');
         highlight(shipment.houseNumber, dom1, '#54FF9F');
         highlight(shipment.state, dom1, '#F4A460');
-        highlight(shipment.quantity, dom2, 'yellow');
         return shipment;
     }
 

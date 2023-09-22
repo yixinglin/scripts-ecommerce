@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h2>Paketlabel</h2>
+        <b>Paketnummer</b>: &nbsp
+        {% for parcel in parcels %}
+            <span>{{ parcel.parcelNumber }} &nbsp | &nbsp</span>
+        {% endfor %}
+        <br>
+        <b>Verfolgungsnummer</b>: &nbsp
+        {% for parcel in parcels %}
+            <span>{{ parcel.trackId }} &nbsp | &nbsp</span>
+        {% endfor %}
+
+        <a href="{{parcels[0].location}}" target="_blank"> Sendungsverfolgung </a> 
+
+    </div>
+    <div>
+        <iframe src="data:application/pdf;base64,{{labels[0]}}" 
+        height="800" width="700">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+
+</body>
+</html>

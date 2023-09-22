@@ -1,0 +1,24 @@
+ips:
+  whitelist:
+    - 127.0.0.1
+
+Linux:
+  cache: \root\.cache
+  temp: \root\.temp
+
+Windows:
+  cache: G:\cache
+  temp: G:\data
+
+gls:
+  test:
+    url: https://api-qs1.gls-group.eu/public/v1
+    username: 27612
+    password: oXicgv0fE
+    shipperId: 2761217 276a
+
+  prod:
+    url: https://api.gls-group.eu/public/v1
+    username: 276128
+    password: T24@001
+    shipperId: 2351 276a45P

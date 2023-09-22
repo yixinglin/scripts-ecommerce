@@ -30,3 +30,5 @@ street = '23'
 checkStreet(street);
 street = '23a'
 checkStreet(street);
+street = 'Heidbergstrasse 53'
+checkStreet(street);
