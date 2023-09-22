@@ -6,24 +6,24 @@ function testAlert() {
 class GermanLike {
     constructor(dom) {
         this.countryMap = {"Amazon.de": "de"};
-        this.dom = dom.querySelector('div[data-test-id="shipping-section-buyer-address"]');
-        this.dom2 = dom.querySelector('table.a-keyvalue');
-        this.dom3 = dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');
-        this.dom4 = dom.querySelector('div[data-test-id="order-details-header-action-buttons"]');
+        this.dom = dom;
     }
 
     addButton() {
         // const ele = '<span data-test-id="clipboard-button" class="a-button"><span class="a-button-inner"><input class="a-button-input" type="submit" value="复制到剪切板"><span class="a-button-text" aria-hidden="true">复制到剪切板</span></span></span>'
         const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制客户信息"><span class="a-button-text" aria-hidden="true">复制客户信息</span></span>'
-        var buttonBar = this.dom4;
-        var cbBtn = buttonBar.childNodes[0].cloneNode(true);
+        var buttonBar = this.dom.querySelector('div[data-test-id="order-details-header-action-buttons"]');
+        const ivBtn = buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]');
+        var cbBtn = ivBtn.cloneNode(true);
         cbBtn.setAttribute("data-test-id", "clipboard-button");
         cbBtn.innerHTML = ele;
-        buttonBar.insertBefore(cbBtn, buttonBar.childNodes[0]);
+        buttonBar.insertBefore(cbBtn, ivBtn);
         return cbBtn;
     }
     parse() {
-        const lines = this.dom.childNodes;
+        const lines = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]').childNodes; // Shipment
+        const dom2 = this.dom.querySelector('table.a-keyvalue'); // orderLines
+        const dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
         var pureLines = [];
         for ( var i=0; i<lines.length; i++ ) {
             pureLines.push(lines[i].innerText.trim());
@@ -70,15 +70,16 @@ class GermanLike {
             shipment.name3 = null;
         }
 
-        const quantity = this.dom2.querySelectorAll('td')[4].innerText;
-        const note = this.dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
+        const quantity = dom2.querySelectorAll('td')[4].innerText;
+        const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
         shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
-        const channel = this.dom3.textContent.trim();
-        console.log(channel)
+        const channel = dom3.textContent.trim();
         shipment.country = this.countryMap[channel];
         if (shipment.country == undefined) {
             throw new Error('Country not in the whitelist');
         }
+
+        shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
         return shipment;
     }
 
