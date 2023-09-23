@@ -53,3 +53,28 @@ function Toast(msg, duration){
         setTimeout(function() { document.body.removeChild(m) }, d * 1000);  
     }, duration);  
 }  
+
+// Json to form
+function convertJsonToForm(data) {
+    ans = Object.keys(data).map(function(k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
+    }).join('&')
+    return ans
+}
+
+var Carriers = {
+    createGlsLabel: function(url, data) {
+        console.log("createGlsLabel", data);
+        GM_xmlhttpRequest({
+            method: "post",
+            url: url,
+            data:  convertJsonToForm(data),
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            onload: function(res) {
+                var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
+                glswin.document.write(res.responseText);
+                console.log(res.responseText)
+            }
+        })
+    }
+}

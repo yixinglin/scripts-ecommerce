@@ -7,27 +7,27 @@
     <style>
         .a-input { 
             width: 300px;
-            height: 30px;
+            height: 28px;
             box-sizing: border-box;
             padding: 0px;
-            margin:4px;
+            margin:2px;
             vertical-align: middle;
         }
     </style>
 </head>
 <body>
     <script>
-        function importFromClipboard() {
-                console.log('aa');
-                navigator.clipboard.readText().then(text => {
-                var shipment = JSON.parse(text);
-                console.log('Pasted content: ', shipment);
-                fillForm(shipment);
-            }).catch(err => {
-                console.error(err)
-                alert('Failed to read clipboard contents');
-            });
-        }
+        // function importFromClipboard() {
+        //         console.log('aa');
+        //         navigator.clipboard.readText().then(text => {
+        //         var shipment = JSON.parse(text);
+        //         console.log('Pasted content: ', shipment);
+        //         fillForm(shipment);
+        //     }).catch(err => {
+        //         console.error(err)
+        //         alert('Failed to read clipboard contents');
+        //     });
+        // }
 
         function fillForm(shipment) {
             document.getElementById('orderNumber').value = shipment.orderNumber;
@@ -89,7 +89,7 @@
         <p><input type = "submit" value = "Submit" /></p>
     </form>
 
-    <p><button id="from-clipboard-id" onclick="importFromClipboard()">从剪切板导入</button></p>
+    <!-- <p><button id="from-clipboard-id" onclick="importFromClipboard()">从剪切板导入</button></p> -->
     <span>注意：同一订单号只能生成一次包裹单。</span> <br>
     <span>HOST: {{ host }}</span>
 </body>

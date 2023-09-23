@@ -10,17 +10,6 @@ class GermanLike {
         this.dom = dom;
     }
 
-    addButton() {
-        // const ele = '<span data-test-id="clipboard-button" class="a-button"><span class="a-button-inner"><input class="a-button-input" type="submit" value="复制到剪切板"><span class="a-button-text" aria-hidden="true">复制到剪切板</span></span></span>'
-        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制客户信息"><span class="a-button-text" aria-hidden="true">复制客户信息</span></span>'
-        var buttonBar = this.dom.querySelector('div[data-test-id="order-details-header-action-buttons"]');
-        const ivBtn = buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]');
-        var cbBtn = ivBtn.cloneNode(true);
-        cbBtn.setAttribute("data-test-id", "clipboard-button");
-        cbBtn.innerHTML = ele;
-        buttonBar.insertBefore(cbBtn, ivBtn);
-        return cbBtn;
-    }
     parse() {
         var dom1 = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]'); // Shipment
         var lines = dom1.childNodes
@@ -84,6 +73,7 @@ class GermanLike {
         }
         shipment.phone = this.dom.querySelector('span[data-test-id="shipping-section-phone"]').textContent;
         shipment.email = "";
+        shipment.pages = 1;
         // const quantity = dom2.querySelectorAll('td')[4].innerText;
         // const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
         // shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
@@ -101,6 +91,41 @@ class GermanLike {
         return shipment;
     }
 
+}
+
+class Surface {
+    constructor(dom) {
+        this.dom = dom;
+        this.buttonBar = this.dom.querySelector('div[data-test-id="order-details-header-action-buttons"]');
+        this.cbBtn = null;
+        this.glsBtn = null;
+    }
+
+    addButtonCopyToClipboard() {
+        // const ele = '<span data-test-id="clipboard-button" class="a-button"><span class="a-button-inner"><input class="a-button-input" type="submit" value="复制到剪切板"><span class="a-button-text" aria-hidden="true">复制到剪切板</span></span></span>'
+        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制客户信息"><span class="a-button-text" aria-hidden="true">复制客户信息</span></span>'
+        const ivBtn = this.buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
+        this.cbBtn = ivBtn.cloneNode(true);      // Create a new button
+        this.cbBtn.setAttribute("data-test-id", "clipboard-button");  // Set button id
+        this.cbBtn.innerHTML = ele;          // Set button content
+        this.buttonBar.insertBefore(this.cbBtn, ivBtn);  // Place button at the first position
+        return this.cbBtn;
+    }
+
+    addButtonGLSParcelLabel() {
+        if (this.glsBtn != null) {
+            return this.glsBtn;
+        } else {
+            const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="GLS"><span class="a-button-text" aria-hidden="true">GLS</span></span>'
+            this.glsBtn = this.cbBtn.cloneNode(true);      // Create a new button
+            this.glsBtn.setAttribute("data-test-id", "gls-button");  // Set button id
+            this.glsBtn.innerHTML = ele;
+            this.buttonBar.insertBefore(this.glsBtn, this.cbBtn);
+            return this.glsBtn;
+        }
+    }
+
+    
 }
 
 
