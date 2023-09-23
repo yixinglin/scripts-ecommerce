@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLS</title>
+    <style>
+        .a-input { 
+            width: 300px;
+            height: 30px;
+            box-sizing: border-box;
+            padding: 0px;
+            margin:4px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function importFromClipboard() {
+                console.log('aa');
+                navigator.clipboard.readText().then(text => {
+                var shipment = JSON.parse(text);
+                console.log('Pasted content: ', shipment);
+                fillForm(shipment);
+            }).catch(err => {
+                console.error(err)
+                alert('Failed to read clipboard contents');
+            });
+        }
+
+        function fillForm(shipment) {
+            document.getElementById('orderNumber').value = shipment.orderNumber;
+            document.getElementById('name1').value = shipment.name1;
+            document.getElementById('name2').value = shipment.name2;
+            document.getElementById('name3').value = shipment.name3;
+            document.getElementById('street').value = shipment.street;
+            document.getElementById('houseNumber').value = shipment.houseNumber;
+            document.getElementById('state').value = shipment.state;
+            document.getElementById('city').value = shipment.city;
+            document.getElementById('zip').value = shipment.zip;
+            document.getElementById('country').value = shipment.country.toUpperCase();
+            document.getElementById('note').value = shipment.note;
+            document.getElementById('phone').value = shipment.phone;
+            document.getElementById('email').value = shipment.email;
+        }
+    </script>
+
+    <h1>GLS包裹单</h1>
+    <form method="post" action = "{{ host }}/gls-label">
+        <label for="orderNumber">订单</label>
+        <input type="text" name="orderNumber" id="orderNumber" class="a-input"><br>
+        <label for="name1">名 1</label>
+        <input type="text" name="name1" id="name1" class="a-input"><br>
+        <label for="name2">名 2</label>
+        <input type="text" name="name2" id="name2" class="a-input"><br>
+        <label for="name3">名 3</label>
+        <input type="text" name="name3" id="name3" class="a-input"><br>
+        <label for="street">街名</label>
+        <input type="text" name="street" id="street" class="a-input">
+        <input type="text" name="houseNumber" id="houseNumber" placeholder="号" style="width:50px;"><br>
+        <label for="city" >城市</label>
+        <input type="text" name="city" id="city" class="a-input"><br>
+        <label for="zip" >邮编</label>
+        <input type="text" name="zip" id="zip" class="a-input"><br>
+        <label for="state" >洲省</label>
+        <input type="text" name="state" id="state" class="a-input"><br>
+        <label for="country">国家</label>
+        <select name="country" id="country" class="a-input">
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="IT">Italy</option>
+        </select> 
+        <br>
+        <label for="email" >邮件</label>
+        <input type="text" name="email" id="email" class="a-input"><br>
+        <label for="phone" >电话</label>
+        <input type="text" name="phone" id="phone" class="a-input"><br>
+        <label for="note" >记号</label>
+        <input type="text" name="note" id="note" class="a-input"><br>
+        <label for="pages">页数</label>
+        <select name="pages" id="pages" class="a-input">
+            <script>
+                for(var i=1;i<=10;i++){
+                    document.write(`<option value=${i}>${i}</option>`);
+                }
+            </script>
+        </select>
+        <p><input type = "submit" value = "Submit" /></p>
+    </form>
+
+    <p><button id="from-clipboard-id" onclick="importFromClipboard()">从剪切板导入</button></p>
+    <span>注意：同一订单号只能生成一次包裹单。</span> <br>
+    <span>HOST: {{ host }}</span>
+</body>
+</html>

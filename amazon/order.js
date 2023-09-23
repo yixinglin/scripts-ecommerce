@@ -82,10 +82,12 @@ class GermanLike {
             shipment.name2 = pureLines[5];
             shipment.name3 = null;
         }
-
+        shipment.phone = this.dom.querySelector('span[data-test-id="shipping-section-phone"]').textContent;
+        shipment.email = "";
         // const quantity = dom2.querySelectorAll('td')[4].innerText;
         // const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
         // shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
+        shipment.note = ""
         shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
         
         highlight(shipment.name1, dom1, 'yellow');

@@ -20,13 +20,14 @@ def buildAPI(debug=True) -> GLSApi:
     return api 
 
 def amazonShipment(shipment, api: GLSApi) -> dict:
-    parcels = [{"weight": 1, "comment": ""}]
-    payload = api.fillForm(shipment["orderNumber"], 
-                           shipment["name1"], shipment["name2"], shipment["name3"], 
-                           shipment["street"] + " " +shipment["houseNumber"], 
-                           shipment["city"], shipment["zip"], 
-                           shipment["state"],
-                           shipment["country"], "", parcels)
+    parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
+    payload = api.fillForm(reference=shipment["orderNumber"], 
+                           name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 
+                           street=shipment["street"] + " " +shipment["houseNumber"], 
+                           city=shipment["city"], zipCode=shipment["zip"], 
+                           province=shipment["state"],
+                           country=shipment["country"], email=shipment['email'], 
+                           phone=shipment["phone"], parcels=parcels)
     return payload
 
 def glsLabel(shipment: dict, debug=True) -> dict:

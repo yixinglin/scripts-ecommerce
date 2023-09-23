@@ -34,7 +34,7 @@ class GLSApi:
          
 
     def fillForm(self, reference, name1, name2, name3, 
-                 street, city, zipCode, province, country, email, parcels:List[Dict]):
+                 street, city, zipCode, province, country, email, phone, parcels:List[Dict]):
         with open(PTH_PAYLOAD, "r", encoding="utf-8") as f:  
             payload = json.load(f)
         payload["shipperId"] = self.shipperId
@@ -48,6 +48,7 @@ class GLSApi:
         payload["addresses"]["delivery"]["city"] = city
         payload["addresses"]["delivery"]["zipCode"] = zipCode
         payload["addresses"]["delivery"]["email"] = email
+        payload["addresses"]["delivery"]["phone"] = phone
         payload["parcels"] = parcels
         return payload 
 
@@ -69,7 +70,7 @@ def demo01():
         }]
     payload = api.fillForm("Test-o22-123456723289", 
                            "Fischer gmbh", "Peter Fischer", None,  
-                           "Muster str. 123", "Hamburg", "22312", "Hamburg", "DE", "", parcel)
+                           "Muster str. 123", "Hamburg", "22312", "Hamburg", "DE", "Note", parcel)
     try:
         filename = f"{conf['Windows']['temp']}\gls-{payload['references'][0]}.json"
         label = api.createParcelLabel(payload)
