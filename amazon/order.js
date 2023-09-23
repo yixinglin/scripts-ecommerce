@@ -20,17 +20,16 @@ class GermanLike {
             pureLines.push(lines[i].innerText.trim());
         }
         pureLines.reverse();
-        // data preprocessing
+        // Data preprocessing
         if (!checkZipCode(pureLines[0]) && checkZipCode(pureLines[1])) {
             pureLines.shift() // delete country line.
         }
 
         var ele = pureLines[1]
         if (ele.indexOf(",") != -1) {
-            pureLines.splice(1, 0, null)
+            pureLines.splice(1, 0, "");
         }
         if (pureLines.length > 6) {
-            alert("Items > 6");
             throw new Error('Items > 6!');
         }
         console.log(pureLines);
@@ -52,7 +51,7 @@ class GermanLike {
     
         shipment.state = pureLines[1];
         shipment.city = pureLines[2].replace(',', '');
-        
+
         const street = pureLines[3];
         if (!checkStreet(street)) {
             throw new Error('Street unrecognized!');
@@ -70,24 +69,40 @@ class GermanLike {
             shipment.name1 = pureLines[4];
             shipment.name2 = pureLines[5];
             shipment.name3 = "";
+        } else if (pureLines.length == 7) {
+            shipment.name3 = pureLines[4]; // co
+            shipment.name1 = pureLines[5]; // company
+            shipment.name2 = pureLines[6]; // name
         }
-        shipment.phone = this.dom.querySelector('span[data-test-id="shipping-section-phone"]').textContent;
+        if (shipment.name2.toLowerCase().includes("gmbh")) {
+            [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
+        }
+        // Check DHL parcel
+        for(let n of [shipment.name1, shipment.name2, shipment.name3]) {
+            if (n.toLowerCase().includes('dhl')) {
+                throw new Error('It seems to be a DHL parcel');
+            }
+        }
+
+        const phoneDom = this.dom.querySelector('span[data-test-id="shipping-section-phone"]');
+        shipment.phone = phoneDom!=null? phoneDom.textContent : ""
         shipment.email = "";
         shipment.pages = 1;
+        shipment.note = ""
+        shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
         // const quantity = dom2.querySelectorAll('td')[4].innerText;
         // const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
         // shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
-        shipment.note = ""
-        shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
-        
-        highlight(shipment.name1, dom1, 'yellow');
-        highlight(shipment.name2, dom1, '#FFD700');
-        highlight(shipment.name3, dom1), '#EEB422';
-        highlight(shipment.city, dom1, '#BEBEBE');
-        highlight(shipment.zip, dom1, '#FFDEAD');
-        highlight(shipment.street, dom1, '#87CEEB');
-        highlight(shipment.houseNumber, dom1, '#54FF9F');
-        highlight(shipment.state, dom1, '#F4A460');
+
+        const addrDom = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]');
+        highlight(shipment.name1, addrDom, 'yellow');
+        highlight(shipment.name2, addrDom, '#FFD700');
+        highlight(shipment.name3, addrDom), '#EEB422';
+        highlight(shipment.city, addrDom, '#BEBEBE');
+        highlight(shipment.zip, addrDom, '#FFDEAD');
+        highlight(shipment.street, addrDom, '#87CEEB');
+        highlight(shipment.houseNumber, addrDom, '#54FF9F');
+        highlight(shipment.state, addrDom, '#F4A460');
         return shipment;
     }
 

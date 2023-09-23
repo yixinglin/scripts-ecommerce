@@ -9,6 +9,7 @@ PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
 
 class GLSApi:
+    MAX_NAME_LEN = 37
 
     def __init__(self, url, username, password, shipperId) -> None:
         self.url = url 
@@ -35,6 +36,12 @@ class GLSApi:
 
     def fillForm(self, reference, name1, name2, name3, 
                  street, city, zipCode, province, country, email, phone, parcels:List[Dict]):
+        
+        name1, name2, name3 = self.adjustNameFields(name1, name2, name3)
+        passed = self.checkNameLength([name1, name2, name3])
+        if(not passed):
+            raise Exception("Names are too long.")
+
         with open(PTH_PAYLOAD, "r", encoding="utf-8") as f:  
             payload = json.load(f)
         payload["shipperId"] = self.shipperId
@@ -52,6 +59,32 @@ class GLSApi:
         payload["parcels"] = parcels
         return payload 
 
+    def checkNameLength(self, names: List[str]):
+        for name in names:
+            if len(name) > self.MAX_NAME_LEN:
+                return False
+        return True 
+
+    def adjustNameFields(self, name1, name2, name3):
+        tmp = ""
+        if (len(name1) >= self.MAX_NAME_LEN):
+            tmp = name1[self.MAX_NAME_LEN:]
+            name1 = name1[:self.MAX_NAME_LEN]
+            if (len(name3) > 0):
+                name2 = tmp + " || " +name2
+            else:
+                name3 = name2
+                name2 = tmp
+        if (len(name2) >= self.MAX_NAME_LEN):
+            tmp = name2[self.MAX_NAME_LEN:]
+            name2 = name2[:self.MAX_NAME_LEN]
+            if(len(name3) > 0):
+                name3 = tmp + " || " + name3 
+            else:
+                name3 = tmp
+            
+        return [name1, name2, name3]
+            
 
 
 def demo01():

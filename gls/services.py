@@ -18,7 +18,7 @@ def buildAPI(debug=True) -> GLSApi:
     else:
         api = GLSApi(**conf['gls']['prod'])
     return api 
-
+# Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
     parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
     payload = api.fillForm(reference=shipment["orderNumber"], 
@@ -30,6 +30,23 @@ def amazonShipment(shipment, api: GLSApi) -> dict:
                            phone=shipment["phone"], parcels=parcels)
     return payload
 
+# Create GLS label
+    # shipment = {
+    #     "country": "de",
+    #     "zip": "56307",
+    #     "state": "Rheinland-Pfalz",
+    #     "city": "Dernbach",
+    #     "street": "Hauptstr.",
+    #     "houseNumber": "60",
+    #     "name1": "Sonja Lenz",
+    #     "name2": None,
+    #     "name3": None,
+    #     "note": "1x FBM Hotgen 39er",
+    #     "phone": 123456
+    #     "email": abc@gmail.com
+    #     "pages": 2
+    #     "orderNumber": "028-7752738-0461157"
+    # }
 def glsLabel(shipment: dict, debug=True) -> dict:
     conf = loadConfiguration()
     api = buildAPI(debug)
@@ -43,22 +60,4 @@ def glsLabel(shipment: dict, debug=True) -> dict:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(resp, f, ensure_ascii=False, indent=3)
     return resp 
-
-if __name__ == '__main__':
-    shipment = {
-        "country": "de",
-        "zip": "56307",
-        "state": "Rheinland-Pfalz",
-        "city": "Dernbach",
-        "street": "Hauptstr.",
-        "houseNumber": "60",
-        "name1": "Sonja Lenz",
-        "name2": None,
-        "name3": None,
-        "note": "1x FBM Hotgen 39er",
-        "orderNumber": "028-7752738-0461157"
-    }
-    resp = glsLabel(shipment, debug=True)
-    print(resp)
-
     

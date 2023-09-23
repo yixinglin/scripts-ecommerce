@@ -11,8 +11,10 @@ CORS(app, resources=r'/*')
 # Generate a GLS label.
 @app.route('/gls/label', methods=['POST'])
 def gls_label():
-    # shipment = json.loads(request.form)
+    print("Remote addr", request.remote_addr)
     shipment = request.form
+    for (key, val) in shipment.items():
+        print(key, val)
     print(shipment)
     label = services.glsLabel(shipment, debug=DEBUG)
     resp = render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'])

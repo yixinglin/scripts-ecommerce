@@ -95,7 +95,7 @@ var Carriers = {
             onload: function(res) {
                 var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
                 glswin.document.write(res.responseText);
-                console.log(res.responseText)
+                //console.log(res.responseText)
             },
             onerror: function(res) {
                 console.log(res.responseText);
