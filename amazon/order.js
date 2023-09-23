@@ -78,8 +78,9 @@ class GermanLike {
             [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
         }
         // Check DHL parcel
-        for(let n of [shipment.name1, shipment.name2, shipment.name3]) {
-            if (n.toLowerCase().includes('dhl')) {
+        for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
+            var prefix = n.toLowerCase().substring(0, 4);
+            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
                 throw new Error('It seems to be a DHL parcel');
             }
         }
