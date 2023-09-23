@@ -64,12 +64,12 @@ class GermanLike {
 
         if (pureLines.length == 5) {
             shipment.name1 = pureLines[4];
-            shipment.name2 = null;
-            shipment.name3 = null;
+            shipment.name2 = "";
+            shipment.name3 = "";
         } else if (pureLines.length == 6) {
             shipment.name1 = pureLines[4];
             shipment.name2 = pureLines[5];
-            shipment.name3 = null;
+            shipment.name3 = "";
         }
         shipment.phone = this.dom.querySelector('span[data-test-id="shipping-section-phone"]').textContent;
         shipment.email = "";
