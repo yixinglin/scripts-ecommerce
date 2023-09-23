@@ -54,6 +54,28 @@ function Toast(msg, duration){
     }, duration);  
 }  
 
+//Quote: https://stackoverflow.com/a/61511955
+// Wait for element to exist
+function waitForElm(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                observer.disconnect();
+                resolve(document.querySelector(selector));
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
 // Json to form
 function convertJsonToForm(data) {
     ans = Object.keys(data).map(function(k) {
@@ -74,7 +96,12 @@ var Carriers = {
                 var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
                 glswin.document.write(res.responseText);
                 console.log(res.responseText)
+            },
+            onerror: function(res) {
+                console.log(res.responseText);
+                Toast("Error", 1000)
             }
+
         })
     }
 }
