@@ -17,11 +17,21 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-const GLS_HOST = 'http://127.0.0.1:5000';
+var GLS_HOST;
+const MODE = 2;
+switch (MODE) {
+    case 1: GLS_HOST = 'http://127.0.0.1:5001'; // Testing
+        break;
+    case 2: GLS_HOST = 'http://www.hamster24.buzz:5005'; // Staging
+        break;
+    case 3: GLS_HOST = 'http://deu.xing2022.buzz:5001'; // production
+        break;
+}
 
 (() => {
     'use strict';
-    const DELAY_SEC = 1000;
+
+
     waitForElm('div[data-test-id="order-details-header-action-buttons"]').then((elm) => {
         console.log('Element is ready');
         const parser = new GermanLike(document);
@@ -31,6 +41,11 @@ const GLS_HOST = 'http://127.0.0.1:5000';
             onClickCopyCustomerInfo(parser, surface);
         })
     });
+    // @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\order.js
+    // @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\lib.js
+    // @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/order.js
+    // @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/lib.js
+    // -Access -GET -POST -Uncaught
 })();
 
 function onClickCopyCustomerInfo(parser, surface) {
@@ -62,10 +77,3 @@ function onClickGLSButton(shipment) {
     console.log(shipment);
     Carriers.createGlsLabel(GLS_HOST+'/gls/label', shipment);
 }
-
-
-
-
-
-
-
