@@ -6,57 +6,65 @@ function testAlert() {
 class GermanLike {
     constructor(dom) {
         // this.countryMap = {"Amazon.de": "de", "Amazon.fr": "fr", "Amazon.it": "it", "Amazon.es": "es"};
-        this.countryMap = {"Amazon.de": "de"};
         this.dom = dom;
+        this.countryMap = {"Germany": "de", "Deutschland": "de"};
+        this.checkerMap = {
+            "Germany": new GermanAddrChecker(), "Deutschland": new GermanAddrChecker(),
+        }
+        // this.checker = new GermanAddrChecker()
     }
 
     parse() {
+        const ivBtn = document.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
+        if (!ivBtn.textContent.includes("invoice") &&  !ivBtn.textContent.includes("Rechnung")) {
+            throw new Error("Please switch the web page language to English or German.");
+        }
+
         var dom1 = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]'); // Shipment
         var lines = dom1.childNodes
         var dom2 = this.dom.querySelector('table.a-keyvalue'); // orderLines
-        var dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
+        // var dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
+        // const channel = dom3.textContent.trim();  
         var pureLines = [];
         for ( var i=0; i<lines.length; i++ ) {
             pureLines.push(lines[i].innerText.trim());
         }
         pureLines.reverse();
         // Data preprocessing
-        if (!checkZipCode(pureLines[0]) && checkZipCode(pureLines[1])) {
-            pureLines.shift() // delete country line.
-        }
-
-        var ele = pureLines[1]
-        if (ele.indexOf(",") != -1) {
-            pureLines.splice(1, 0, "");
+        const country = pureLines.shift()                           // delete country line.
+        const checker = this.checkerMap[country];
+        var ele = pureLines[0]
+        if (ele.indexOf(",") != -1) {   // if state is not shown
+            pureLines.splice(0, 0, ""); // insert state to the array
         }
         if (pureLines.length > 7) {
             throw new Error('Items > 7!');
         }
         console.log(pureLines);
         
-        // zip, [state], city, street, company, name
+        //zh-CH: zip, [state], city, street, company, name 
+        //en-US: [state], city, zip, street, company, name 
         var shipment = {};
-        const channel = dom3.textContent.trim();  
-        shipment.country = this.countryMap[channel];
+        shipment.country = this.countryMap[country];
         if (shipment.country == undefined) {
             throw new Error(`Country not in the whitelist: [${Object.keys(this.countryMap)}]`);
         }
 
-        const zip = pureLines[0];
-        if (!checkZipCode(zip)) {
+        shipment.state = pureLines[0];
+        shipment.city = pureLines[1].replace(',', '');
+
+        const zip = pureLines[2];
+        if (!checker.checkZipCode(zip)) {
             throw new Error('ZipCode unrecognized!');
         } else {
             shipment.zip = zip;
         }
     
-        shipment.state = pureLines[1];
-        shipment.city = pureLines[2].replace(',', '');
-
         const street = pureLines[3];
-        if (!checkStreet(street)) {
+        if (!checker.checkStreet(street)) {
             throw new Error('Street unrecognized!');
         } else {
-            const st = splitStreet(street);
+            const st = checker.splitStreet(street);
             shipment.street = st[0];
             shipment.houseNumber = st[1];
         }   
@@ -118,8 +126,7 @@ class Surface {
     }
 
     addButtonCopyToClipboard() {
-        // const ele = '<span data-test-id="clipboard-button" class="a-button"><span class="a-button-inner"><input class="a-button-input" type="submit" value="复制到剪切板"><span class="a-button-text" aria-hidden="true">复制到剪切板</span></span></span>'
-        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制客户信息"><span class="a-button-text" aria-hidden="true">复制客户信息</span></span>'
+        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制收货地址"><span class="a-button-text" aria-hidden="true">复制收货地址</span></span>'
         const ivBtn = this.buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
         this.cbBtn = ivBtn.cloneNode(true);      // Create a new button
         this.cbBtn.setAttribute("data-test-id", "clipboard-button");  // Set button id

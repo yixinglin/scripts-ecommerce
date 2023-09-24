@@ -1,34 +1,33 @@
-function checkZipCode(postalCode) {
-    var reg = /^[0-9]{5}$/;
-    if(reg.test(postalCode)){
-        return true;
-    }else if(postalCode==""||postalCode.length==0){
-        return false;
-    }else{
-        return false;
+class GermanAddrChecker {
+    checkZipCode(zip) {
+        var reg = /^[0-9]{5}$/;
+        if(reg.test(zip)){
+            return true;
+        }else {
+            return false;
+        }
     }
+    // Example: Muster Straße 123a
+    checkStreet(street) {
+        var reg = /^([A-Za-zäößüÄÜÖéÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
+        if(reg.test(street)){
+            return true;
+        } else {
+            return false;
+        }    
+    }
+
+    // Example: Muster Straße | 123a
+    splitStreet(street) {
+        if (!this.checkStreet(street)) {
+            return null;
+        } else {
+            return [RegExp.$1, RegExp.$2];
+        }
+    }
+    
 }
 
-// Example: Muster Straße 123a
-function checkStreet(street) {
-    var reg = /^([A-Za-zäößüÄÜÖéÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
-    if(reg.test(street)){
-        return true;
-    }else if(street==""||street.length==0){
-        return false;
-    }else{
-        return false;
-    }
-}
-
-// Example: Muster Straße | 123a
-function splitStreet(street) {
-    if (!checkStreet(street)) {
-        return null;
-    } else {
-        return [RegExp.$1, RegExp.$2];
-    }
-}
 
 function highlight(keyword, targetDom, color) {
     if (keyword != null ) {
