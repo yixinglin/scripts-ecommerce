@@ -29,8 +29,8 @@ class GermanLike {
         if (ele.indexOf(",") != -1) {
             pureLines.splice(1, 0, "");
         }
-        if (pureLines.length > 6) {
-            throw new Error('Items > 6!');
+        if (pureLines.length > 7) {
+            throw new Error('Items > 7!');
         }
         console.log(pureLines);
         

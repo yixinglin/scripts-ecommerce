@@ -1,0 +1,55 @@
+[2023-09-24 04:44:54,615][app.py:1744][ERROR][25548] - Exception on /gls/label [POST]
+Traceback (most recent call last):
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "D:\Program Files\Python38\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\app.py", line 23, in gls_label
+    label = services.glsLabel(shipment, debug=DEBUG)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\services.py", line 62, in glsLabel
+    filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{payload['references'][0]}{'-TEST' if debug else ''}.json")
+KeyError: 'Windows'
+[2023-09-24 04:46:29,166][app.py:1744][ERROR][6244] - Exception on /gls/label [POST]
+Traceback (most recent call last):
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "D:\Program Files\Python38\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\app.py", line 23, in gls_label
+    label = services.glsLabel(shipment, debug=DEBUG)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\services.py", line 60, in glsLabel
+    api = buildAPI(debug)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\services.py", line 24, in buildAPI
+    api = GLSApi(**conf['gls']['test'])
+KeyError: 'gls'
+[2023-09-24 04:47:43,540][app.py:1744][ERROR][22488] - Exception on /gls/label [POST]
+Traceback (most recent call last):
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 2528, in wsgi_app
+    response = self.full_dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1825, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "D:\Program Files\Python38\lib\site-packages\flask_cors\extension.py", line 165, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1823, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "D:\Program Files\Python38\lib\site-packages\flask\app.py", line 1799, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\app.py", line 23, in gls_label
+    label = services.glsLabel(shipment, debug=DEBUG)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\services.py", line 62, in glsLabel
+    api = buildAPI(debug)
+  File "G:\hansagt\tampermonkey\scripts-ecommerce\gls\services.py", line 26, in buildAPI
+    api = GLSApi(**conf['gls']['test'])
+KeyError: 'gls'

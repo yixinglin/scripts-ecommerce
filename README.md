@@ -9,4 +9,15 @@ pip3 install pyyaml
 pip3 install requests
 pip3 install Werkzeug
 ```
- 
+
+Run the server in testing environment
+```
+python gls\app.py 
+```
+
+Run the server in prod environment
+```
+python gls\app.py --prod
+python gls\app.py --prod >> log.txt
+
+```

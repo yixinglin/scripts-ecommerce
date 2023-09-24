@@ -2,9 +2,15 @@ from gls import GLSApi
 import yaml 
 import os 
 import json 
+import platform
+import glo
+
 
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
+OS_TYPE = platform.system()
+
+# app = glo.getValue("app")
 
 def loadConfiguration():
     with open(PTH_CONF, "r", encoding="utf-8") as f:
@@ -12,7 +18,7 @@ def loadConfiguration():
     return conf 
 
 def buildAPI(debug=True) -> GLSApi:
-    conf = loadConfiguration()
+    conf = glo.getValue("conf")
     if (debug):
         api = GLSApi(**conf['gls']['test'])
     else:
@@ -48,11 +54,12 @@ def amazonShipment(shipment, api: GLSApi) -> dict:
     #     "orderNumber": "028-7752738-0461157"
     # }
 def glsLabel(shipment: dict, debug=True) -> dict:
-    conf = loadConfiguration()
+    conf = glo.getValue("conf")
     api = buildAPI(debug)
     payload = amazonShipment(shipment, api)
-    filename = f"{conf['Windows']['temp']}\gls-{payload['references'][0]}{'-TEST' if debug else ''}.json"
+    filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{payload['references'][0]}{'-TEST' if debug else ''}.json") 
     if os.path.exists(filename):
+        # app.logger.info("[RESTORE]: ", filename)
         with open(filename, 'r', encoding='utf-8') as f:
             resp = json.load(f) 
     else:

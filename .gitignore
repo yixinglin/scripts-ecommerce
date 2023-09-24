@@ -2,3 +2,4 @@
 gls/config.yaml
 .vscode/settings.json
 *.pyc
+deploy-lin003.bat
