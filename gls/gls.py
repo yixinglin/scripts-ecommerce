@@ -5,7 +5,7 @@ import yaml
 import json 
 from typing import List, Dict
 import platform
-
+import glo 
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
@@ -14,6 +14,7 @@ class GLSApi:
     MAX_NAME_LEN = 37
 
     def __init__(self, url, username, password, shipperId) -> None:
+        self.app = glo.getValue("app")
         self.url = url 
         self.shipperId = shipperId
         auth = f"{username}:{password}"
@@ -29,7 +30,7 @@ class GLSApi:
           
     def createParcelLabel(self, payload) -> dict:
         postUrl = self.url + "/shipments"
-        print("[GLS REQUEST]: ", postUrl) 
+        self.app.logger.info("[GLS REQUEST]: " + postUrl)
         resp = requests.post(postUrl, headers=self.headers, json=payload) 
         if (resp.status_code == 201):
             return json.loads(resp.text)

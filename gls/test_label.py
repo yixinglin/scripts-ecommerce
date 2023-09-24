@@ -12,7 +12,7 @@ def checkGLSNames(api, names):
     print(passed)
 
 def testGLSNames():
-    api = services.buildAPI(debug=True)
+    api = services.buildAPI()
     names = [
         "I provided professional IT support our online editor can",
         "Peter Mueller",

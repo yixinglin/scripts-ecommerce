@@ -5,36 +5,13 @@ import json
 import platform
 import glo
 
-
 PTH_PAYLOAD = "./gls/payload.json"
-PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
 
-# app = glo.getValue("app")
-
-def loadConfiguration():
-    with open(PTH_CONF, "r", encoding="utf-8") as f:
-        conf = yaml.load(f, Loader=yaml.FullLoader)
-    return conf 
-
-def buildAPI(debug=True) -> GLSApi:
+def buildAPI() -> GLSApi:
     conf = glo.getValue("conf")
-    if (debug):
-        api = GLSApi(**conf['gls']['test'])
-    else:
-        api = GLSApi(**conf['gls']['prod'])
+    api = GLSApi(**conf['gls'])
     return api 
-# Mapping from amazon to gls payload
-def amazonShipment(shipment, api: GLSApi) -> dict:
-    parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
-    payload = api.fillForm(reference=shipment["orderNumber"], 
-                           name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 
-                           street=shipment["street"] + " " +shipment["houseNumber"], 
-                           city=shipment["city"], zipCode=shipment["zip"], 
-                           province=shipment["state"],
-                           country=shipment["country"], email=shipment['email'], 
-                           phone=shipment["phone"], parcels=parcels)
-    return payload
 
 # Create GLS label
     # shipment = {
@@ -53,13 +30,14 @@ def amazonShipment(shipment, api: GLSApi) -> dict:
     #     "pages": 2
     #     "orderNumber": "028-7752738-0461157"
     # }
-def glsLabel(shipment: dict, debug=True) -> dict:
+def glsLabel(shipment: dict) -> dict:
     conf = glo.getValue("conf")
-    api = buildAPI(debug)
+    app = glo.getValue("app")
+    api = buildAPI()
     payload = amazonShipment(shipment, api)
-    filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{payload['references'][0]}{'-TEST' if debug else ''}.json") 
+    filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{payload['references'][0]}.json") 
     if os.path.exists(filename):
-        # app.logger.info("[RESTORE]: ", filename)
+        app.logger.info("[RESTORE]: " + filename)
         with open(filename, 'r', encoding='utf-8') as f:
             resp = json.load(f) 
     else:
@@ -68,3 +46,14 @@ def glsLabel(shipment: dict, debug=True) -> dict:
             json.dump(resp, f, ensure_ascii=False, indent=3)
     return resp 
     
+# Mapping from amazon to gls payload
+def amazonShipment(shipment, api: GLSApi) -> dict:
+    parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
+    payload = api.fillForm(reference=shipment["orderNumber"], 
+                           name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 
+                           street=shipment["street"] + " " +shipment["houseNumber"], 
+                           city=shipment["city"], zipCode=shipment["zip"], 
+                           province=shipment["state"],
+                           country=shipment["country"], email=shipment['email'], 
+                           phone=shipment["phone"], parcels=parcels)
+    return payload

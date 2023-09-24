@@ -15,9 +15,9 @@ Run the server in testing environment
 python gls\app.py 
 ```
 
-Run the server in prod environment
+Run the server in prod environment. A configuration file should be specified.
 ```
-python gls\app.py --prod
-python gls\app.py --prod >> log.txt
-
+python gls\app.py gls\config.yaml
+python gls\app.py gls\config-prod.yaml
+python gls\app.py gls\config-stage.yaml
 ```

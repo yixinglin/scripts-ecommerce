@@ -2,4 +2,9 @@
 gls/config.yaml
 .vscode/settings.json
 *.pyc
-deploy-lin003.bat
+deploy*.bat
+gls/config-prod.yaml
+gls/config-stage.yaml
+log.txt
+
+.vscode/launch.json
