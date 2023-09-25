@@ -5,9 +5,10 @@
 // @description  try to take over the world!
 // @author       Yixing
 // @match        file:///F:/shared/amazon/example*.*
+// @match        https://sellercentral-europe.amazon.com/orders-v3/order/*
 // @match        https://sellercentral.amazon.de/orders-v3/order/*
-// @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\order.js
-// @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\lib.js
+// @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/order.js
+// @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/lib.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @run-at       document-end
 // @grant        unsafeWindow
@@ -18,7 +19,7 @@
 // ==/UserScript==
 
 var GLS_HOST;
-const MODE = 2;
+const MODE = 1;
 switch (MODE) {
     case 1: GLS_HOST = 'http://127.0.0.1:5001'; // Testing
         break;
@@ -77,3 +78,6 @@ function onClickGLSButton(shipment) {
     console.log(shipment);
     Carriers.createGlsLabel(GLS_HOST+'/gls/label', shipment);
 }
+
+
+

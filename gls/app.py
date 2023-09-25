@@ -60,11 +60,13 @@ def index():
     return render_template("gls_form.html", host=conf["server"]["host"])
 
 def setupLogger():
+    conf = glo.getValue("conf")
+    pth_log = os.path.join(conf[OS_TYPE]["cache"], 'gls.log')
     logging.basicConfig(level=logging.INFO, stream=sys.stdout, datefmt  = '%Y-%m-%d %H:%M:%S',
                         format="[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d] - %(message)s")
     formatter = logging.Formatter(
         "[%(asctime)s][%(filename)s:%(lineno)d][%(levelname)s][%(thread)d]: %(message)s")
-    fileHandler = logging.FileHandler('log.txt', encoding='UTF-8')
+    fileHandler = logging.FileHandler(pth_log, encoding='UTF-8')
     fileHandler.setLevel(logging.INFO) 
     fileHandler.setFormatter(formatter)
     app.logger.addHandler(fileHandler)

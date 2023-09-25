@@ -40,7 +40,6 @@ class GLSApi:
 
     def fillForm(self, reference, name1, name2, name3, 
                  street, city, zipCode, province, country, email, phone, parcels:List[Dict]):
-        
         name1, name2, name3 = self.adjustNameFields(name1, name2, name3)
         passed = self.checkNameLength([name1, name2, name3])
         if(not passed):
