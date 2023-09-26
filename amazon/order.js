@@ -42,7 +42,6 @@ class GermanLike {
         }
         console.log(pureLines);
         
-        //zh-CH: zip, [state], city, street, company, name 
         //en-US: [state], city, zip, street, company, name 
         var shipment = {};
         shipment.country = this.countryMap[country];
@@ -106,7 +105,7 @@ class GermanLike {
         const addrDom = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]');
         highlight(shipment.name1, addrDom, 'yellow');
         highlight(shipment.name2, addrDom, '#FFD700');
-        highlight(shipment.name3, addrDom), '#EEB422';
+        highlight(shipment.name3, addrDom, '#EEB422');
         highlight(shipment.city, addrDom, '#BEBEBE');
         highlight(shipment.zip, addrDom, '#FFDEAD');
         highlight(shipment.street, addrDom, '#87CEEB');

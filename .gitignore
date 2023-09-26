@@ -8,3 +8,5 @@ gls/config-stage.yaml
 log.txt
 
 .vscode/launch.json
+
+js-test

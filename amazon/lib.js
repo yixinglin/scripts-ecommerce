@@ -9,7 +9,7 @@ class GermanAddrChecker {
     }
     // Example: Muster Straße 123a
     checkStreet(street) {
-        var reg = /^([A-Za-zäößüÄÜÖéÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ\s.,-]+)\s([\d]+[a-zA-Z]?)$/
+        var reg = /^([A-Za-zäößüÄÜÖ\s.,-]+)([\s\d-/,]+[a-zA-Z]?)$/
         if(reg.test(street)){
             return true;
         } else {
@@ -94,7 +94,6 @@ var Carriers = {
             onload: function(res) {
                 var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
                 glswin.document.write(res.responseText);
-                //console.log(res.responseText)
             },
             onerror: function(res) {
                 console.log(res.responseText);
