@@ -15,7 +15,6 @@ OS_TYPE = glo.OS_TYPE
 def setupLogger():
     conf = glo.getValue("conf")
     PARENT = conf[OS_TYPE]["cache"]
-    os.makedirs(PARENT, exist_ok=True)
     pth_log = os.path.join(PARENT, conf[OS_TYPE]["cache"], 'gls.log')
     logging.basicConfig(level=logging.INFO, stream=sys.stdout, datefmt  = '%Y-%m-%d %H:%M:%S',
                         format="[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d] - %(message)s")
@@ -39,6 +38,8 @@ if __name__ == '__main__':
         PTH_CONF = sys.argv[1]
 
     conf = loadConfiguration(PTH_CONF)
+    os.makedirs(conf[OS_TYPE]["cache"], exist_ok=True)
+    os.makedirs(conf[OS_TYPE]["temp"], exist_ok=True)
     glo.setValue("app", app)
     glo.setValue("PTH_CONF", PTH_CONF)
     glo.setValue("conf", conf)

@@ -7,7 +7,11 @@
 </head>
 <body>
     <div>
-        <h2>Paketlabel</h2>
+        {% if isnew %}
+            <h2>Paketlabel</h2>
+        {% else %}
+            <h2>[Altes] Paketlabel</h2>
+        {% endif %}
         <b>Paketnummer</b>: &nbsp
         {% for parcel in parcels %}
             <span>{{ parcel.parcelNumber }} &nbsp | &nbsp</span>

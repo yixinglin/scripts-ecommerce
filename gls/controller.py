@@ -18,8 +18,8 @@ def gls_label():
     app.logger.info("REMOTE: " + request.remote_addr)
     shipment = request.form
     app.logger.info(shipment.to_dict())
-    label = services.glsLabel(shipment)
-    return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'])
+    label, isnew = services.glsLabel(shipment)
+    return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'], isnew=isnew)
 
 # Page for an exemplary parcel label.
 @app.route('/gls/label', methods=['GET'])
@@ -29,7 +29,7 @@ def gls_test_label():
     filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{orderNumber}.json") 
     with open(filename, 'r', encoding='utf-8') as f:
         label = json.load(f)
-    return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'])
+    return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'], isnew=False)
 
 # http://127.0.0.1:5001/scripts?channel=amazon&script=order.js
 @app.route('/scripts', methods=['GET'])
@@ -52,7 +52,7 @@ def block_method():
     ip = request.environ.get('REMOTE_ADDR')
     conf = glo.getValue("conf")
     if (not isInWhiteList(ip, conf['ips']['whitelist'])):
-        app.logger.info("Unknown IP was blocked. " + ip)
+        app.logger.info(f"[THREAD] Unknown IP {ip} was blocked. [{request.method}] {request.url}")
         abort(403, "Your ip is not in the whitelist. Please contact the administrator for registration.")
 
 @app.errorhandler(Exception)

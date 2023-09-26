@@ -36,12 +36,12 @@ def glsLabel(shipment: dict) -> dict:
     api = buildAPI()
     payload = amazonShipment(shipment, api)
     parent = f"{conf[OS_TYPE]['temp']}"
-    os.makedirs(parent, exist_ok=True)
     filename = os.path.join(parent, f"gls-{payload['references'][0]}.json") 
     if os.path.exists(filename):
         app.logger.info("[RESTORE]: " + filename)
         with open(filename, 'r', encoding='utf-8') as f:
             resp = json.load(f) 
+        isnew = False
     else:
         resp = api.createParcelLabel(payload)
         with open(filename, 'w', encoding='utf-8') as f:
@@ -57,7 +57,8 @@ def glsLabel(shipment: dict) -> dict:
         with open(pth_csv, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
             app.logger.info("[RECORDED] CSV: " + line)
-    return resp 
+        isnew = True 
+    return resp, isnew
     
 # Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
