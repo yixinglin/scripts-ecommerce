@@ -11,7 +11,7 @@ import platform
 
 
 OS_TYPE = glo.OS_TYPE
-
+  
 def setupLogger():
     conf = glo.getValue("conf")
     PARENT = conf[OS_TYPE]["cache"]
