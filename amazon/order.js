@@ -27,7 +27,7 @@ class GermanLike {
         // const channel = dom3.textContent.trim();  
         var pureLines = [];
         for ( var i=0; i<lines.length; i++ ) {
-            pureLines.push(lines[i].innerText.trim());
+            pureLines.push(lines[i].textContent.trim());
         }
         pureLines.reverse();
         // Data preprocessing
@@ -67,7 +67,6 @@ class GermanLike {
             shipment.street = st[0];
             shipment.houseNumber = st[1];
         }   
-
         if (pureLines.length == 5) {
             shipment.name1 = pureLines[4];
             shipment.name2 = "";

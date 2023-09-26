@@ -31,6 +31,7 @@ class GermanAddrChecker {
 
 function highlight(keyword, targetDom, color) {
     if (keyword != null ) {
+        keyword = keyword.replace("&", "&amp;")
         var content = targetDom.innerHTML;
         var arr = content.split(keyword);
         if (arr.length == 2 ) {
