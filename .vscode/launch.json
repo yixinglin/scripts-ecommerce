@@ -11,6 +11,10 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
+            "program": "gls\\app.py",
+            "env": {
+                "FLASK_APP": "gls\\app.py"
+            },
             "args": [
                 "gls\\config.yaml"
             ]

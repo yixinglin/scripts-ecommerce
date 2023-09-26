@@ -1,12 +1,12 @@
 from gls import GLSApi
-import yaml 
 import os 
 import json 
-import platform
 import glo
+from glo import app 
+from datetime import datetime
 
 PTH_PAYLOAD = "./gls/payload.json"
-OS_TYPE = platform.system()
+OS_TYPE = glo.OS_TYPE
 
 def buildAPI() -> GLSApi:
     conf = glo.getValue("conf")
@@ -35,25 +35,30 @@ def glsLabel(shipment: dict) -> dict:
     app = glo.getValue("app")
     api = buildAPI()
     payload = amazonShipment(shipment, api)
-    filename = os.path.join(f"{conf[OS_TYPE]['temp']}", f"gls-{payload['references'][0]}.json") 
+    parent = f"{conf[OS_TYPE]['temp']}"
+    filename = os.path.join(parent, f"gls-{payload['references'][0]}.json") 
     if os.path.exists(filename):
         app.logger.info("[RESTORE]: " + filename)
         with open(filename, 'r', encoding='utf-8') as f:
             resp = json.load(f) 
+        isnew = False
     else:
         resp = api.createParcelLabel(payload)
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(resp, f, ensure_ascii=False, indent=3)
+            app.logger.info("[SAVED] ORDER TO " + filename)
         pth_csv = os.path.join(conf[OS_TYPE]['temp'], "gls.csv")
-        
-        cell = [shipment['orderNumber'], shipment['country'], shipment['state'], 
+        cell = [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
+                shipment['orderNumber'], shipment['country'], shipment['state'], 
                 shipment['zip']+' '+shipment['city'], 
                 shipment['street']+' '+shipment['houseNumber'], 
                 shipment['name1'], shipment['name2'], shipment['name3'], shipment['phone']]
         line = ";".join(cell)
         with open(pth_csv, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
-    return resp 
+            app.logger.info("[RECORDED] CSV: " + line)
+        isnew = True 
+    return resp, isnew
     
 # Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
