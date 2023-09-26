@@ -9,7 +9,7 @@ class GermanAddrChecker {
     }
     // Example: Muster Straße 123a
     checkStreet(street) {
-        var pattern1 = /^([A-Za-zäößüÄÜÖ\s.,-]+)([\s\d-/,]+[a-zA-Z]?)$/
+        var pattern1 = /^([A-Za-zäößüÄÜÖéÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ\s.,-]+)([\s\d-/,]+[a-zA-Z]?)$/
         if(pattern1.test(street)){
             return true;
         } else {
