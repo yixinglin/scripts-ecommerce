@@ -1,11 +1,9 @@
 import glo 
 import base64
 import requests
-import yaml
 import json 
 from typing import List, Dict
 import platform
-import glo 
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
@@ -28,7 +26,7 @@ class GLSApi:
             "Authorization": f"Basic {auth}"
         }
           
-    def createParcelLabel(self, payload) -> dict:
+    def createParcelLabel(self, payload:dict) -> dict:
         postUrl = self.url + "/shipments"
         self.app.logger.info("[GLS REQUEST]: " + postUrl)
         resp = requests.post(postUrl, headers=self.headers, json=payload) 
@@ -88,35 +86,3 @@ class GLSApi:
             
         return [name1, name2, name3]
             
-
-
-def demo01():
-    with open(PTH_CONF, "r", encoding="utf-8") as f:
-        conf = yaml.load(f, Loader=yaml.FullLoader)
-    api = GLSApi(**conf['gls']['test'])
-    parcel = [{
-            "weight": 1,
-            "comment": "Note 1@Test"
-        }, {
-            "weight": 1,
-            "comment": "Note 1@Test"
-        }, {
-            "weight": 1,
-            "comment": "Note 1@Test"
-        }]
-    payload = api.fillForm("Test-o22-123456723289", 
-                           "Fischer gmbh", "Peter Fischer", None,  
-                           "Muster str. 123", "Hamburg", "22312", "Hamburg", "DE", "Note", parcel)
-    try:
-        filename = f"{conf[OS_TYPE]['temp']}\gls-{payload['references'][0]}.json"
-        label = api.createParcelLabel(payload)
-        with open(filename, 'w', encoding="utf-8") as f:
-            json.dump(label, f, ensure_ascii=False, indent=3)
-    except Exception as e:
-        # app.logger.error(e) 
-        print(e)
-
-
-if __name__ == '__main__':
-    demo01()
-        
