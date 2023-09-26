@@ -9,7 +9,6 @@ def isInWhiteList(ip, whitelist: List[str]):
 
 if __name__ == '__main__':
     whitelist = [
-        # "192.168.[0-9]+.[0-9]+",
         "192.168.[0-9]*.[0-9]*",
     ]
 
