@@ -19,7 +19,7 @@
         <br>
         <b>Verfolgungsnummer</b>: &nbsp
         {% for parcel in parcels %}
-            <span>{{ parcel.trackId }} &nbsp | &nbsp</span>
+            <span id="trackId-{{loop.index}}">{{ parcel.trackId }} &nbsp | &nbsp</span>
         {% endfor %}
 
         <a href="{{parcels[0].location}}" target="_blank"> Sendungsverfolgung </a> 
