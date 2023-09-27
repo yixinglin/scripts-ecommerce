@@ -21,17 +21,16 @@
 var GLS_HOST;
 const MODE = 1;
 switch (MODE) {
-    case 1: GLS_HOST = 'http://127.0.0.1:5001'; // Testing
+    case 1: GLS_HOST = 'http://www.example-test.com:5001'; // Testing
         break;
-    case 2: GLS_HOST = 'http://www.hamster24.buzz:5005'; // Staging
+    case 2: GLS_HOST = 'http://www.example-stage.com:5005'; // Staging
         break;
-    case 3: GLS_HOST = 'http://deu.xing2022.buzz:5001'; // production
+    case 3: GLS_HOST = 'http://www.example-prod.com:5001'; // production
         break;
 }
 
 (() => {
     'use strict';
-
 
     waitForElm('div[data-test-id="order-details-header-action-buttons"]').then((elm) => {
         console.log('Element is ready');
@@ -42,11 +41,6 @@ switch (MODE) {
             onClickCopyCustomerInfo(parser, surface);
         })
     });
-    // @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\order.js
-    // @require      file://G:\hansagt\tampermonkey\scripts-ecommerce\amazon\lib.js
-    // @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/order.js
-    // @require      https://raw.githubusercontent.com/yixinglin/scripts-ecommerce/main/amazon/lib.js
-    // -Access -GET -POST -Uncaught
 })();
 
 function onClickCopyCustomerInfo(parser, surface) {
@@ -70,14 +64,21 @@ function onClickCopyCustomerInfo(parser, surface) {
     } catch(err) {
         alert(err);
     }
-
     console.log(shipment);
 }
 
 function onClickGLSButton(shipment) {
     console.log(shipment);
-    Carriers.createGlsLabel(GLS_HOST+'/gls/label', shipment);
+    Carriers.createGlsLabel(GLS_HOST+'/gls/label', shipment, (trackId) => {
+        console.log(trackId);
+        let trackInput = document.querySelector('input[data-test-id="text-input-tracking-id"]');
+        let evt = document.createEvent('HTMLEvents');
+        if (trackInput) {
+            trackInput.focus();
+            trackInput.setAttribute("value", trackId)
+            evt.initEvent('input', true, true);
+            evt.eventType = 'message';
+            trackInput.dispatchEvent(evt);
+        }
+    });
 }
-
-
-

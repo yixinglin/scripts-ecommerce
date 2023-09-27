@@ -1,3 +1,5 @@
+// Script for temporary monkey
+
 class GermanAddrChecker {
     checkZipCode(zip) {
         var reg = /^[0-9]{5}$/;

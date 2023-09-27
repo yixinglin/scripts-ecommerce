@@ -1,17 +1,17 @@
 
+// Script for temporary monkey
+
 function testAlert() {
     alert("testAAA");
 }
 
 class GermanLike {
     constructor(dom) {
-        // this.countryMap = {"Amazon.de": "de", "Amazon.fr": "fr", "Amazon.it": "it", "Amazon.es": "es"};
         this.dom = dom;
         this.countryMap = {"Germany": "de", "Deutschland": "de"};
         this.checkerMap = {
             "Germany": new GermanAddrChecker(), "Deutschland": new GermanAddrChecker(),
         }
-        // this.checker = new GermanAddrChecker()
     }
 
     parse() {
@@ -23,8 +23,6 @@ class GermanLike {
         var dom1 = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]'); // Shipment
         var lines = dom1.childNodes
         var dom2 = this.dom.querySelector('table.a-keyvalue'); // orderLines
-        // var dom3 = this.dom.querySelector('span[data-test-id="order-summary-sales-channel-value"]');   // Channel
-        // const channel = dom3.textContent.trim();  
         var pureLines = [];
         for ( var i=0; i<lines.length; i++ ) {
             pureLines.push(lines[i].textContent.trim());
