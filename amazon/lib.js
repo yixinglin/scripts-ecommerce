@@ -56,6 +56,15 @@ function Toast(msg, duration){
     }, duration);  
 }  
 
+function setValueToInputElm(inputElm, value) {
+    inputElm.focus();
+    inputElm.setAttribute("value", value)
+    let evt = document.createEvent('HTMLEvents');
+    evt.initEvent('input', true, true);
+    evt.eventType = 'message';
+    inputElm.dispatchEvent(evt);
+}
+
 //Quote: https://stackoverflow.com/a/61511955
 // Wait for element to exist
 function waitForElm(selector) {

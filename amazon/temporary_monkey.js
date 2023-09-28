@@ -72,13 +72,8 @@ function onClickGLSButton(shipment) {
     Carriers.createGlsLabel(GLS_HOST+'/gls/label', shipment, (trackId) => {
         console.log(trackId);
         let trackInput = document.querySelector('input[data-test-id="text-input-tracking-id"]');
-        let evt = document.createEvent('HTMLEvents');
         if (trackInput) {
-            trackInput.focus();
-            trackInput.setAttribute("value", trackId)
-            evt.initEvent('input', true, true);
-            evt.eventType = 'message';
-            trackInput.dispatchEvent(evt);
+            setValueToInputElm(trackInput, trackId);
         }
     });
 }
