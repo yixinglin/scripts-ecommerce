@@ -44,8 +44,9 @@ def get_script():
 # Page for filling up GLS form.
 @app.route('/gls/label/form')
 def index():
+    print(request.remote_addr, request.host_url)
     conf = glo.getValue("conf")
-    return render_template("gls_form.html", host=conf["server"]["host"])
+    return render_template("gls_form.html", host="http://"+request.host)
 
 @app.before_request
 def block_method():

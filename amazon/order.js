@@ -70,8 +70,8 @@ class GermanLike {
             shipment.name2 = "";
             shipment.name3 = "";
         } else if (pureLines.length == 6) {
-            shipment.name1 = pureLines[4];
-            shipment.name2 = pureLines[5];
+            shipment.name2 = pureLines[4];  // company or c/o
+            shipment.name1 = pureLines[5];  // name
             shipment.name3 = "";
         } else if (pureLines.length == 7) {
             shipment.name3 = pureLines[4]; // co
