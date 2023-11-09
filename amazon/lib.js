@@ -98,24 +98,71 @@ function convertJsonToForm(data) {
 var Carriers = {
     createGlsLabel: function(url, data, callback) {
         console.log("createGlsLabel", data);
-        GM_xmlhttpRequest({
-            method: "post",
-            url: url,
-            data:  convertJsonToForm(data),
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            onload: function(res) {
-                var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
-                glswin.document.write(res.responseText);
-                if (callback) {
-                    var trackId = glswin.document.getElementById("trackId-1").textContent;
-                    callback(trackId.replace("|", "").trim())
-                }
-            },
-            onerror: function(res) {
-                console.log(res.responseText);
-                Toast("Error", 1000)
-            }
+        // GM_xmlhttpRequest({
+        //     method: "post",
+        //     url: url,
+        //     data:  convertJsonToForm(data),
+        //     headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        //     onload: function(res) {
+        //         var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
+        //         glswin.document.write(res.responseText);
+        //         if (callback) {
+        //             var trackId = glswin.document.getElementById("trackId-1").textContent;
+        //             callback(trackId.replace("|", "").trim())
+        //         }
+        //     },
+        //     onerror: function(res) {
+        //         console.log(res.responseText);
+        //         Toast("Error", 1000)
+        //     }
 
-        })
+        // })
+
+        var headers = {"Content-Type": "application/x-www-form-urlencoded"};
+        makePostRequest(url, convertJsonToForm(data), headers).then(resp => {
+            var glswin = window.open ("", "GLS Label", "location=no,status=no,scrollvars=no,width=800,height=900");
+            glswin.document.write(resp);
+            if (callback) {
+                var trackId = glswin.document.getElementById("trackId-1").textContent;
+                callback(trackId.replace("|", "").trim())
+            }
+        }).catch(resp => {
+            console.log(resp.responseText);
+            Toast("Error", 1000)
+        });
     }
 }
+
+
+function makePostRequest(url, payload, headers) {
+    return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+        method: "POST",
+        url: url,
+        data: payload,
+        headers: headers,
+        onload: function(response) {
+            resolve(response.responseText);
+        },
+        onerror: function(error) {
+            reject(error);
+        }
+        });
+    });
+}
+
+function makeGetRequest(url) {
+    return new Promise((resolve, reject) => {
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: url,
+        onload: function(response) {
+          resolve(response.responseText);
+        },
+        onerror: function(error) {
+          reject(error);
+        }
+      });
+    });
+  }
+

@@ -2,7 +2,7 @@
 // Script for temporary monkey
 
 function testAlert() {
-    alert("testAAA");
+    alert("testAAaaA");
 }
 
 class GermanLike {
@@ -12,6 +12,20 @@ class GermanLike {
         this.checkerMap = {
             "Germany": new GermanAddrChecker(), "Deutschland": new GermanAddrChecker(),
         }
+    }
+
+    // Return Promise Object
+    fetchShipmentFromApi() {
+        var orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
+        var blobUrl = `https://sellercentral.amazon.de/orders-api/order/${orderNumber}`;
+        return makeGetRequest(blobUrl).then( res => {
+            var data = JSON.parse(res);
+            var blob = data.order.blob;
+            var payload = {"blobs": [blob]};
+            var headers = {"Acccept": "application/json", "Content-Type": "application/json"}
+            return makePostRequest("https://sellercentral.amazon.de/orders-st/resolve", 
+                        JSON.stringify(payload), headers);
+        })
     }
 
     parse() {
@@ -111,6 +125,69 @@ class GermanLike {
         return shipment;
     }
 
+    parse2(data) {
+        var orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
+        var address = data[orderNumber].address;
+        console.log(address)
+        var shipment = {};
+        shipment.orderNumber = orderNumber;
+        shipment.country = address.countryCode.toLowerCase();
+        shipment.state = address.stateOrRegion == null? "": address.stateOrRegion;;
+        shipment.city = address.city;
+        shipment.zip = address.postalCode;
+
+        if (shipment.country.toLowerCase() != "de") {
+            throw new Error(`Country not in the whitelist.`);
+        }
+
+        var line1 = address.line1 == null? "": address.line1;   // c/o
+        var line2 = address.line2 == null? "": address.line2;  // Street
+        if (line2.length == 0) {
+            [line1, line2] = [line2, line1];
+        }
+
+        shipment.street = line2;
+        shipment.houseNumber = "";
+
+        var reg = /^[\s\d-/,]+[a-zA-Z]?$/;
+        if (reg.test(shipment.street)) {
+            shipment.street = line1 + " " + line2;
+            line1 = "";
+        }
+
+        shipment.name1 = address.name == null? "": address.name;
+        shipment.name2 = address.companyName == null? "": address.companyName; 
+        shipment.name3 = line1; 
+        if (shipment.name2.length == 0) {
+            [shipment.name2, shipment.name3] = [shipment.name3, shipment.name2];
+  
+        }
+
+        if (shipment.name2.toLowerCase().includes("gmbh")) {
+            [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
+        }
+        // Check DHL parcel
+        for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
+            var prefix = n.toLowerCase().substring(0, 4);
+            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
+                throw new Error('It seems to be a DHL parcel');
+            }
+        }
+
+        if (shipment.street.length == 0 || shipment.street.length == null) {
+            throw new Error('Street unrecognized.');
+        }
+        
+
+        shipment.phone = address.phoneNumber == null? "": address.phoneNumber; 
+        shipment.email = "";
+        shipment.pages = 1;
+        shipment.note = "";
+        console.log(shipment);
+        return shipment;
+
+    }
+
 }
 
 class Surface {
@@ -129,6 +206,16 @@ class Surface {
         this.cbBtn.innerHTML = ele;          // Set button content
         this.buttonBar.insertBefore(this.cbBtn, ivBtn);  // Place button at the first position
         return this.cbBtn;
+    }
+
+    addButtonCopyToClipboard2() {
+        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="备用"><span class="a-button-text" aria-hidden="true">备用</span></span>'
+        const ivBtn = this.buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
+        this.cbBtn2 = ivBtn.cloneNode(true);      // Create a new button
+        this.cbBtn2.setAttribute("data-test-id", "api-button");  // Set button id
+        this.cbBtn2.innerHTML = ele;          // Set button content
+        this.buttonBar.insertBefore(this.cbBtn2, ivBtn);  // Place button at the first position
+        return this.cbBtn2;
     }
 
     addButtonGLSParcelLabel() {
