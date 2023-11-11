@@ -1,20 +1,99 @@
 
 // Script for temporary monkey
 
-function testAlert() {
-    alert("testAAA");
+var AmazonApi = {
+    /**
+     * Get information from Amazon API
+     * @returns An Promise Object
+     */
+    fetchShipmentFromApi: function(orderNumber) {
+        var blobUrl = `https://sellercentral.amazon.de/orders-api/order/${orderNumber}`;
+        return makeGetRequest(blobUrl).then( res => {
+            var data = JSON.parse(res);
+            var blob = data.order.blob;
+            var payload = {"blobs": [blob]};
+            var headers = {"Acccept": "application/json", "Content-Type": "application/json"}
+            return makePostRequest("https://sellercentral.amazon.de/orders-st/resolve", 
+                        JSON.stringify(payload), headers);
+        })
+    }
 }
 
+
 class GermanLike {
+
     constructor(dom) {
         this.dom = dom;
-        this.countryMap = {"Germany": "de", "Deutschland": "de"};
+        this.countryBlackListMap = {"Schweiz": "ch", "Switzerland": "ch", 
+            "United Kingdom": "gb", "Vereinigtes Königreich": "gb",
+            "Turkey": "tr", "Türkei": "tr"};
+        this.countryWhiteListMap = {"Germany": "de", "Deutschland": "de"};
         this.checkerMap = {
             "Germany": new GermanAddrChecker(), "Deutschland": new GermanAddrChecker(),
         }
     }
 
-    parse() {
+    getOrderNumber() {
+        this.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
+        return this.orderNumber;
+    }
+
+    needTransparentCode() {
+        var transparency = this.dom.querySelector("i.a-transparency-badge");
+        if (transparency != null) {
+            return true
+        } 
+        return false;
+    }
+
+    getOrderLines() {
+        if (this.needTransparentCode()) {
+            alert("Need transparent code.");
+        }
+        const rows = this.dom.querySelectorAll("div.a-spacing-large table.a-keyvalue tr");
+        var lines = [];
+        for(let i=1; i<rows.length; i++) {
+            const tds = rows[i].querySelectorAll("td");
+            const status = tds[0].textContent;
+            const pn = tds[2].querySelectorAll("div.product-name-column-word-wrap-break-all");
+            const productName = tds[2].querySelector("div.more-info-column-word-wrap-break-word").textContent;
+            const sku = pn[1].textContent.replace("SKU:", "").trim();
+            const asin = pn[0].textContent.replace("ASIN:", "").trim();
+            var quantity = tds[4].textContent.trim();
+            quantity = parseInt(quantity);
+            var price = tds[6].querySelector("span").textContent;
+            lines.push({sku, quantity, asin, price, productName, status});
+        }
+        return lines;
+    }
+
+    isDhlParcel(shipment) {
+        // Check DHL parcel
+        for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
+            const prefix = n.toLowerCase().substring(0, 4);
+            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
+                return true;
+            }
+        }
+
+        if (shipment.street.toLowerCase().includes("packstation")) {
+            return true;
+        }
+        return false;
+    }
+
+    isInCountryWhiteList(countryCode) {
+        const codeList = Object.values(this.countryWhiteListMap);
+        return codeList.includes(countryCode.toLowerCase());
+    }
+
+    isInCountryBlackList(countryCode) {
+        const codeList = Object.values(this.countryBlackListMap);
+        return codeList.includes(countryCode.toLowerCase());
+    }
+
+    // Get shipping address from the surface of the website
+    parseFromWebSurface() {
         const ivBtn = document.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
         if (!ivBtn.textContent.includes("invoice") &&  !ivBtn.textContent.includes("Rechnung")) {
             throw new Error("Please switch the web page language to English or German.");
@@ -31,6 +110,9 @@ class GermanLike {
         // Data preprocessing
         const country = pureLines.shift()                           // delete country line.
         const checker = this.checkerMap[country];
+        if (checker == undefined) {
+            throw new Error("Country is not in the whitelist. [checker]");
+        }
         var ele = pureLines[0]
         if (ele.indexOf(",") != -1) {   // if state is not shown
             pureLines.splice(0, 0, ""); // insert state to the array
@@ -42,9 +124,9 @@ class GermanLike {
         
         //en-US: [state], city, zip, street, company, name 
         var shipment = {};
-        shipment.country = this.countryMap[country];
-        if (shipment.country == undefined) {
-            throw new Error(`Country not in the whitelist: [${Object.keys(this.countryMap)}]`);
+        shipment.country = this.countryWhiteListMap[country];  // Country code
+        if (!this.isInCountryWhiteList(shipment.country)) {
+            throw new Error(`Country not in the whitelist: [${Object.keys(this.countryWhiteListMap)}]`);
         }
 
         shipment.state = pureLines[0];
@@ -70,8 +152,8 @@ class GermanLike {
             shipment.name2 = "";
             shipment.name3 = "";
         } else if (pureLines.length == 6) {
-            shipment.name1 = pureLines[4];
-            shipment.name2 = pureLines[5];
+            shipment.name2 = pureLines[4];  // company or c/o
+            shipment.name1 = pureLines[5];  // name
             shipment.name3 = "";
         } else if (pureLines.length == 7) {
             shipment.name3 = pureLines[4]; // co
@@ -81,25 +163,20 @@ class GermanLike {
         if (shipment.name2.toLowerCase().includes("gmbh")) {
             [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
         }
-        // Check DHL parcel
-        for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
-            var prefix = n.toLowerCase().substring(0, 4);
-            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
-                throw new Error('It seems to be a DHL parcel');
-            }
-        }
-
         const phoneDom = this.dom.querySelector('span[data-test-id="shipping-section-phone"]');
+        const orderLines = this.getOrderLines();
         shipment.phone = phoneDom!=null? phoneDom.textContent : ""
         shipment.email = "";
         shipment.pages = 1;
-        shipment.note = ""
-        shipment.orderNumber = this.dom.querySelector('span[data-test-id="order-id-value"]').textContent;
-        // const quantity = dom2.querySelectorAll('td')[4].innerText;
-        // const note = dom2.querySelectorAll("div.product-name-column-word-wrap-break-all")[1].innerText
-        // shipment.note = quantity + note.replace("SKU", "").replace(":", "x").trim();
+        shipment.note = this.getNote(orderLines);
+        shipment.orderNumber = this.getOrderNumber();
+        
+        if(this.isDhlParcel(shipment)) {
+            throw new Error(`It seems to be a DHL parcel.`); 
+        }
 
         const addrDom = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]');
+
         highlight(shipment.name1, addrDom, 'yellow');
         highlight(shipment.name2, addrDom, '#FFD700');
         highlight(shipment.name3, addrDom, '#EEB422');
@@ -111,41 +188,77 @@ class GermanLike {
         return shipment;
     }
 
-}
+    // Get shipping address from Amazon api
+    parseApiData(data) {
+        var orderNumber = this.getOrderNumber();
+        var address = data[orderNumber].address;
+        console.log(address)
+        var shipment = {};
+        shipment.orderNumber = orderNumber;
+        shipment.country = address.countryCode.toLowerCase();   // Country code
+        shipment.state = address.stateOrRegion == null? "": address.stateOrRegion;;
+        shipment.city = address.city;
+        shipment.zip = address.postalCode;
 
-class Surface {
-    constructor(dom) {
-        this.dom = dom;
-        this.buttonBar = this.dom.querySelector('div[data-test-id="order-details-header-action-buttons"]');
-        this.cbBtn = null;
-        this.glsBtn = null;
-    }
-
-    addButtonCopyToClipboard() {
-        const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="复制收货地址"><span class="a-button-text" aria-hidden="true">复制收货地址</span></span>'
-        const ivBtn = this.buttonBar.querySelector('span[data-test-id="manage-idu-invoice-button"]'); // First button
-        this.cbBtn = ivBtn.cloneNode(true);      // Create a new button
-        this.cbBtn.setAttribute("data-test-id", "clipboard-button");  // Set button id
-        this.cbBtn.innerHTML = ele;          // Set button content
-        this.buttonBar.insertBefore(this.cbBtn, ivBtn);  // Place button at the first position
-        return this.cbBtn;
-    }
-
-    addButtonGLSParcelLabel() {
-        if (this.glsBtn != null) {
-            return this.glsBtn;
-        } else {
-            const ele = '<span class="a-button-inner"><input class="a-button-input" type="submit" value="GLS"><span class="a-button-text" aria-hidden="true">GLS</span></span>'
-            this.glsBtn = this.cbBtn.cloneNode(true);      // Create a new button
-            this.glsBtn.setAttribute("data-test-id", "gls-button");  // Set button id
-            this.glsBtn.innerHTML = ele;
-            this.buttonBar.insertBefore(this.glsBtn, this.cbBtn);
-            return this.glsBtn;
+        if (this.isInCountryBlackList(shipment.country.toLowerCase())) {
+            throw new Error(`Country is in the blacklist: [${Object.keys(this.countryBlackListMap)}]`);
         }
+
+        var line1 = address.line1 == null? "": address.line1;   // Usually c/o
+        var line2 = address.line2 == null? "": address.line2;  // Usually Street and houseNumber
+        const checker = new GermanAddrChecker();
+        // May fail to recognize the street name and number.
+        if (checker.checkStreet(line1)) { 
+            [line1, line2] = [line2, line1];
+        }
+        // line1 could be a streetName when line2 is null.
+        if (line2.length == 0) {
+            [line1, line2] = [line2, line1];
+        }
+
+        var reg = /^[\s\d-/,]+[a-zA-Z]?$/;
+        // line1 could be a streetName when line2 is a street number.
+        if (reg.test(line2)) {    
+            line2 = line1 + " " + line2;
+            line1 = "";
+        }
+
+        shipment.street = line2;
+        shipment.houseNumber = "";
+    
+        shipment.name1 = address.name == null? "": address.name;
+        shipment.name2 = address.companyName == null? "": address.companyName; 
+        shipment.name3 = line1; 
+        if (shipment.name2.length == 0) {
+            [shipment.name2, shipment.name3] = [shipment.name3, shipment.name2];
+        }
+
+        if (shipment.name2.toLowerCase().includes("gmbh")) {
+            [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
+        }
+        shipment.phone = address.phoneNumber == null? "": address.phoneNumber; 
+        shipment.email = "";
+        shipment.pages = 1;
+        const orderLines = this.getOrderLines();
+        shipment.note = this.getNote(orderLines);
+        if(this.isDhlParcel(shipment)) {
+            throw new Error(`It seems to be a DHL parcel.`); 
+        }
+        console.log(shipment);
+        return shipment;
     }
 
-    
+    getNote(orderLines) {
+        var lines = [];
+        for (const o of orderLines) {
+            lines.push(`${o.quantity}x[${o.sku}]`);
+        }
+        return lines.join("\n");
+    }
+
 }
+
+
 
 
 

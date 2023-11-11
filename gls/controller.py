@@ -18,7 +18,7 @@ def gls_label():
     app.logger.info("REMOTE: " + request.remote_addr)
     shipment = request.form
     app.logger.info(shipment.to_dict())
-    label, isnew = services.glsLabel(shipment)
+    label, isnew = services.glsLabel(shipment, addAdditionNote=True)
     return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'], isnew=isnew)
 
 # Page for an exemplary parcel label.
@@ -44,8 +44,9 @@ def get_script():
 # Page for filling up GLS form.
 @app.route('/gls/label/form')
 def index():
+    print(request.remote_addr, request.host_url)
     conf = glo.getValue("conf")
-    return render_template("gls_form.html", host=conf["server"]["host"])
+    return render_template("gls_form.html", host="http://"+request.host)
 
 @app.before_request
 def block_method():

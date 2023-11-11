@@ -7,6 +7,8 @@ pip3 install flask_cors
 pip3 install pyyaml
 pip3 install requests
 pip3 install Werkzeug
+pip install reportlab
+pip install PyPDF2
 ```
 
 Step 2: Install Temporary Monkey on your Chrome browser. For this, the scripts in the [amazon](./amazon) folder is needed.
