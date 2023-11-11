@@ -4,6 +4,7 @@ import requests
 import json 
 from typing import List, Dict
 import platform
+from pylib.ioutils import *
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
@@ -26,15 +27,27 @@ class GLSApi:
             "Authorization": f"Basic {auth}"
         }
           
-    def createParcelLabel(self, payload:dict) -> dict:
+    def createParcelLabel(self, payload:dict, addictionText:str="") -> dict:
         postUrl = self.url + "/shipments"
         self.app.logger.info("[GLS REQUEST]: " + postUrl)
         resp = requests.post(postUrl, headers=self.headers, json=payload) 
         if (resp.status_code == 201):
-            return json.loads(resp.text)
+            parcel = json.loads(resp.text)
+            parcelWithWatermark = self.addTextToParcel(parcel['labels'][0], addictionText)
+            parcel['labels'][0] = parcelWithWatermark
+            return parcel 
         else:
             raise Exception(f"[GLS] Exception {resp.status_code}.\n{resp.text}")
-         
+    
+    def addTextToParcel(self, b64Parcel:str, text:str):
+        pagesize = getPdfPageSize(b64Parcel) # Pagesize of the parcel
+        b64Watermark = createPdfWatermark(text, pagesize=pagesize,
+                                    textPosition=(10*mm, 75*mm),
+                                    textColor=(1, 0, 0, 0.9),
+                                    fontSize=7)
+        b64out = addWatermarkToPdf(b64Parcel, b64Watermark)
+        return b64out
+
 
     def fillForm(self, reference, name1, name2, name3, 
                  street, city, zipCode, province, country, email, phone, parcels:List[Dict]):
@@ -83,6 +96,5 @@ class GLSApi:
                 name3 = tmp + " || " + name3 
             else:
                 name3 = tmp
-            
         return [name1, name2, name3]
             

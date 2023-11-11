@@ -18,7 +18,7 @@ def gls_label():
     app.logger.info("REMOTE: " + request.remote_addr)
     shipment = request.form
     app.logger.info(shipment.to_dict())
-    label, isnew = services.glsLabel(shipment)
+    label, isnew = services.glsLabel(shipment, addAdditionNote=True)
     return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'], isnew=isnew)
 
 # Page for an exemplary parcel label.

@@ -22,11 +22,11 @@
 var GLS_HOST;
 const MODE = 3;
 switch (MODE) {
-    case 1: GLS_HOST = 'http://www.example-test.com:5001'; // Testing
+    case 1: GLS_HOST = 'http://test.example-test.com'; // Testing
         break;
-    case 2: GLS_HOST = 'http://www.example-stage.com:5005'; // Staging
+    case 2: GLS_HOST = 'http://stage.example-stage.com'; // Staging
         break;
-    case 3: GLS_HOST = 'http://www.example-prod.com:5001'; // production
+    case 3: GLS_HOST = 'http://prod.example.com'; // production
         break;
 }
 

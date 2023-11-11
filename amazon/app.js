@@ -14,13 +14,9 @@ class AmazonOrderApplication {
             this.parser = new GermanLike(this.dom);
             this.surface = new OrderPageSurface(this.dom);
             const recognitionButton = this.surface.addButtonRecognizeCustomerInfo();
-            // const oneClickButton = this.surface.addButtonOneClickGls();
             recognitionButton.addEventListener('click', () => {
                 this.onClickParseFromSurfaceButton();
             })
-            // oneClickButton.addEventListener('click', () => {
-            //     this.onClickOneClickButton();
-            // })
         });
     }
 

@@ -10,3 +10,4 @@ log.txt
 .vscode/launch.json
 
 js-test
+py-test

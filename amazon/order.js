@@ -39,13 +39,38 @@ class GermanLike {
     }
 
     needTransparentCode() {
-        var table = this.dom.querySelector("div.myo-list-orders-product-name-cell");
+        var transparency = this.dom.querySelector("i.a-transparency-badge");
+        if (transparency != null) {
+            return true
+        } 
+        return false;
+    }
+
+    getOrderLines() {
+        if (this.needTransparentCode()) {
+            alert("Need transparent code.");
+        }
+        const rows = this.dom.querySelectorAll("div.a-spacing-large table.a-keyvalue tr");
+        var lines = [];
+        for(let i=1; i<rows.length; i++) {
+            const tds = rows[i].querySelectorAll("td");
+            const status = tds[0].textContent;
+            const pn = tds[2].querySelectorAll("div.product-name-column-word-wrap-break-all");
+            const productName = tds[2].querySelector("div.more-info-column-word-wrap-break-word").textContent;
+            const sku = pn[1].textContent.replace("SKU:", "").trim();
+            const asin = pn[0].textContent.replace("ASIN:", "").trim();
+            var quantity = tds[4].textContent.trim();
+            quantity = parseInt(quantity);
+            var price = tds[6].querySelector("span").textContent;
+            lines.push({sku, quantity, asin, price, productName, status});
+        }
+        return lines;
     }
 
     isDhlParcel(shipment) {
         // Check DHL parcel
         for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
-            var prefix = n.toLowerCase().substring(0, 4);
+            const prefix = n.toLowerCase().substring(0, 4);
             if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
                 return true;
             }
@@ -139,10 +164,11 @@ class GermanLike {
             [shipment.name1, shipment.name2] = [shipment.name2, shipment.name1];
         }
         const phoneDom = this.dom.querySelector('span[data-test-id="shipping-section-phone"]');
+        const orderLines = this.getOrderLines();
         shipment.phone = phoneDom!=null? phoneDom.textContent : ""
         shipment.email = "";
         shipment.pages = 1;
-        shipment.note = ""
+        shipment.note = this.getNote(orderLines);
         shipment.orderNumber = this.getOrderNumber();
         
         if(this.isDhlParcel(shipment)) {
@@ -150,6 +176,7 @@ class GermanLike {
         }
 
         const addrDom = this.dom.querySelector('div[data-test-id="shipping-section-buyer-address"]');
+
         highlight(shipment.name1, addrDom, 'yellow');
         highlight(shipment.name2, addrDom, '#FFD700');
         highlight(shipment.name3, addrDom, '#EEB422');
@@ -212,13 +239,21 @@ class GermanLike {
         shipment.phone = address.phoneNumber == null? "": address.phoneNumber; 
         shipment.email = "";
         shipment.pages = 1;
-        shipment.note = "";
+        const orderLines = this.getOrderLines();
+        shipment.note = this.getNote(orderLines);
         if(this.isDhlParcel(shipment)) {
             throw new Error(`It seems to be a DHL parcel.`); 
         }
         console.log(shipment);
         return shipment;
+    }
 
+    getNote(orderLines) {
+        var lines = [];
+        for (const o of orderLines) {
+            lines.push(`${o.quantity}x[${o.sku}]`);
+        }
+        return lines.join("\n");
     }
 
 }

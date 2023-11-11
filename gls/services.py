@@ -30,7 +30,7 @@ def buildAPI() -> GLSApi:
     #     "pages": 2
     #     "orderNumber": "028-7752738-0461157"
     # }
-def glsLabel(shipment: dict) -> dict:
+def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
     conf = glo.getValue("conf")
     app = glo.getValue("app")
     api = buildAPI()
@@ -43,7 +43,8 @@ def glsLabel(shipment: dict) -> dict:
             resp = json.load(f) 
         isnew = False
     else:
-        resp = api.createParcelLabel(payload)
+        note = shipment["note"] if addAdditionNote else ""
+        resp = api.createParcelLabel(payload, note)
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(resp, f, ensure_ascii=False, indent=3)
             app.logger.info("[SAVED] ORDER TO " + filename)
@@ -52,7 +53,7 @@ def glsLabel(shipment: dict) -> dict:
                 shipment['orderNumber'], shipment['country'], shipment['state'], 
                 shipment['zip']+' '+shipment['city'], 
                 shipment['street']+' '+shipment['houseNumber'], 
-                shipment['name1'], shipment['name2'], shipment['name3'], shipment['phone']]
+                shipment['name1'], shipment['name2'], shipment['name3'], shipment['phone'], shipment["note"]]
         line = ";".join(cell)
         with open(pth_csv, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
@@ -62,6 +63,7 @@ def glsLabel(shipment: dict) -> dict:
     
 # Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
+     # note = shipment["note"].strip()
     parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
     payload = api.fillForm(reference=shipment["orderNumber"], 
                            name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 

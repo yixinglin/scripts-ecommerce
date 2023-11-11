@@ -1,14 +1,14 @@
+import sys 
+sys.path.append(".")
 import glo
 import controller
 glo._init()
 from glo import app
-import sys 
 import logging
 import yaml 
 from ip_filter import isInWhiteList
 import os 
 import platform
-
 
 OS_TYPE = glo.OS_TYPE
   
