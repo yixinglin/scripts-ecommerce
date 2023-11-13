@@ -49,11 +49,12 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
             json.dump(resp, f, ensure_ascii=False, indent=3)
             app.logger.info("[SAVED] ORDER TO " + filename)
         pth_csv = os.path.join(conf[OS_TYPE]['temp'], "gls.csv")
+        note = note.replace("\n", " | ")
         cell = [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
                 shipment['orderNumber'], shipment['country'], shipment['state'], 
                 shipment['zip']+' '+shipment['city'], 
                 shipment['street']+' '+shipment['houseNumber'], 
-                shipment['name1'], shipment['name2'], shipment['name3'], shipment['phone'], shipment["note"]]
+                shipment['name1'], shipment['name2'], shipment['name3'], shipment['phone'], note]
         line = ";".join(cell)
         with open(pth_csv, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
