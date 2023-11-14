@@ -44,6 +44,7 @@ if __name__ == '__main__':
     glo.setValue("PTH_CONF", PTH_CONF)
     glo.setValue("conf", conf)
     setupLogger()
+    logging.info("CONF: " + PTH_CONF)
     app.run(host=conf['server']['address'], 
             port=conf['server']['port'], 
             threaded=True, 

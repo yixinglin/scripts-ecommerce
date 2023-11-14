@@ -69,14 +69,18 @@ class GermanLike {
 
     isDhlParcel(shipment) {
         // Check DHL parcel
+        var regPostNumber = /\d{9}/;  // Post number of DHL
         for(let n of [shipment.name1, shipment.name2, shipment.name3, shipment.street]) {
+            if (regPostNumber.test(n)) {
+                return true;
+            }
             const prefix = n.toLowerCase().substring(0, 4);
-            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_') {
+            if (prefix== 'dhl ' || prefix == 'dhl-' || prefix == 'dhl_' ) {
                 return true;
             }
         }
-
-        if (shipment.street.toLowerCase().includes("packstation")) {
+        const street = shipment.street.toLowerCase();
+        if (street.includes("packstation") || street.includes("postfiliale")) {
             return true;
         }
         return false;

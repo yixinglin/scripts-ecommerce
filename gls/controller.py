@@ -15,7 +15,8 @@ OS_TYPE = glo.OS_TYPE
 # Generate a GLS label.
 @app.route('/gls/label', methods=['POST'])
 def gls_label():
-    app.logger.info("REMOTE: " + request.remote_addr)
+    ip = getRemoteIp()
+    app.logger.info("REMOTE: " + ip)
     shipment = request.form
     app.logger.info(shipment.to_dict())
     label, isnew = services.glsLabel(shipment, addAdditionNote=True)
@@ -44,13 +45,22 @@ def get_script():
 # Page for filling up GLS form.
 @app.route('/gls/label/form')
 def index():
-    print(request.remote_addr, request.host_url)
+    ip = getRemoteIp()
+    print(ip, request.host_url)
     conf = glo.getValue("conf")
     return render_template("gls_form.html", host="http://"+request.host)
 
+def getRemoteIp():
+    try:
+        ip = request.headers['X-Real-Ip'] # Flask + nginx
+    except KeyError as e:
+        print(e)
+        ip = request.environ.get('REMOTE_ADDR')  # Flask
+    return ip
+
 @app.before_request
 def block_method():
-    ip = request.environ.get('REMOTE_ADDR')
+    ip = getRemoteIp()
     conf = glo.getValue("conf")
     if (not isInWhiteList(ip, conf['ips']['whitelist'])):
         app.logger.info(f"[THREAD] Unknown IP {ip} was blocked. [{request.method}] {request.url}")

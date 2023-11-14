@@ -43,7 +43,7 @@ class GLSApi:
         pagesize = getPdfPageSize(b64Parcel) # Pagesize of the parcel
         b64Watermark = createPdfWatermark(text, pagesize=pagesize,
                                     textPosition=(10*mm, 75*mm),
-                                    textColor=(1, 0, 0, 0.9),
+                                    textColor=(0, 0, 0, 0.9),
                                     fontSize=7)
         b64out = addWatermarkToPdf(b64Parcel, b64Watermark)
         return b64out
