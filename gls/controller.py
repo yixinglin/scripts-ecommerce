@@ -57,7 +57,6 @@ def getUserIp():
     except KeyError as e:
         print(e)
         ip = request.environ.get('REMOTE_ADDR')  # Flask
-        
     return ip
 
 @app.before_request
@@ -67,6 +66,8 @@ def block_method():
     if (not isInWhiteList(ip, conf['ips']['whitelist'])):
         app.logger.info(f"[THREAD] Unknown IP {ip} was blocked. [{request.method}] {request.url}")
         abort(403, "Your ip is not in the whitelist. Please contact the administrator for registration.")
+    else:
+        app.logger.info(f"[THREAD] IP {ip} was approved. [{request.method}] {request.url}")
 
 @app.errorhandler(Exception)
 def custom400(error):

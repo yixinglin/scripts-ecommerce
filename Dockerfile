@@ -15,4 +15,4 @@ RUN --mount=type=cache,target=/root/.cache pip install Flask \
 # RUN pip install PyPDF2
 
 EXPOSE 5000
-CMD ["python3", "gls/app.py", "gls/config-docker.yaml"]
+CMD ["python3", "/code/gls/app.py", "/code/gls/config-docker.yaml"]
