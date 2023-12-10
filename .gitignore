@@ -15,5 +15,7 @@ docker-compose.yml
 js-test
 py-test
 *.txt
+!list_send.txt
+!unsubs.txt 
 *.log
 emaillib/config-test.yaml
