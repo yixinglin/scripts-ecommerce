@@ -1,0 +1,16 @@
+
+env: test 
+
+smtp:
+  host: smtp.example.com
+  port: 465
+  password: ddn28310
+  address: lisa@example.net
+  username: Lisa
+  security: "ssl/tls"
+  to_test_addrs: 
+    - "test@example.com"
+    - "test2@example.com"
+
+imap: 
+  host: imap.example.com

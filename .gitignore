@@ -14,3 +14,6 @@ docker-compose.yml
 
 js-test
 py-test
+*.txt
+*.log
+emaillib/config-test.yaml
