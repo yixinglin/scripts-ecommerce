@@ -7,12 +7,12 @@
     - A file to store the configuration of your email.
     - A file to store the email addresses to which email will be sent.
     - A file to store the email addresses whose owner has unsubscribed the ad
-    - A file to achieve email addresses to avoid duplicated email sending.
+    - A file to archive email addresses to avoid duplicated email sending.
     - A log file to suspect the status of the program.
     - A EML file that contains your email content. It can also be seen as a email template.
 
 
 Run the program with the following command:
 ```bash
-python3 app.py -c config.yaml -s list_send.txt -u unsubs.txt -a achieve.txt -l info.log -e sample.eml --debug false
+python3 app.py -c config.yaml -s list_send.txt -u unsubs.txt -a archive.txt -l info.log -e sample.eml --debug false
 ```
