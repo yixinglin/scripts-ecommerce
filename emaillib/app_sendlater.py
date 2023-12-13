@@ -137,7 +137,10 @@ if __name__ == '__main__':
         conf_path = os.path.join("emaillib", f"config.yaml")
 
     conf = load_yaml(conf_path)
-    setup_logger(conf['log']['path'], level=conf['log']['level'])
+    log_pth = os.path.join(conf['log']['path'])
+    os.makedirs(log_pth, exist_ok=True)
+    setup_logger(os.path.join(log_pth, "email-app.log"), 
+                 level=conf['log']['level'])
     logging.info(conf)
     debug = not conf['send_later']['actual_send']
     app = EmailApplication(conf_path, debug=debug)

@@ -28,4 +28,4 @@ if __name__ == "__main__":
     print(":is_unsubscribed ", service.is_unsubscribed(email)==True)
     print(":save_to_unsubscribed ", service.save_to_unsubscribed(email))
     print(":unsubscribe ", service.unsubscribe(email))
-    print(":get_list_unsubscribe ", service.get_list_unsubscribe())
+    print(":get_list_unsubscribe ", service.get_list_unsubscribed())
