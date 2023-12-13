@@ -9,6 +9,13 @@ from reportlab.lib.units import mm
 from PyPDF2 import PdfReader, PdfWriter
 from io import BytesIO
 
+def base64decode_urlsafe(b64:str) ->str:
+    return base64.urlsafe_b64decode(b64).decode("utf-8")
+
+def base64encode_urlsafe(text: str)->str:
+    b64 = base64.urlsafe_b64encode(text.encode("utf-8"))
+    return b64.decode('utf-8')
+
 def base64ToPdf(b64) -> bytes:
     bytes_ = base64.b64decode(b64, validate=True)
     return bytes_

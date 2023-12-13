@@ -1,3 +1,4 @@
+# This web application should be deploy locally
 # python app_schedule --mode test
 # -a archive.txt -e to_send\ -l info.log --debug True
 import sys  
@@ -21,7 +22,7 @@ class SendLaterApplication:
         conf = load_yaml(conf_path)
         c_sendLater = conf['send_later']
         self.eml_folder = c_sendLater['eml_folder']
-        self.arch_folder = c_sendLater['arch_folder']
+        self.arch_folder = c_sendLater['arch_folder'] 
         os.makedirs(self.eml_folder, exist_ok=True)
         os.makedirs(self.arch_folder, exist_ok=True)
 
