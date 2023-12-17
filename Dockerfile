@@ -5,15 +5,15 @@ ADD . /code
 # Set working directory
 WORKDIR /code 
 # Install dependencies
-RUN --mount=type=cache,target=/root/.cache pip install Flask \
-     flask_cors pyyaml requests Werkzeug reportlab PyPDF2
-# RUN pip install flask_cors
-# RUN pip install pyyaml
-# RUN pip install requests
-# RUN pip install Werkzeug
-# RUN pip install reportlab
-# RUN pip install PyPDF2
+RUN --mount=type=cache,target=/root/.cache pip install Flask Flask-SQLAlchemy APScheduler \
+     flask_cors pyyaml requests Werkzeug reportlab PyPDF2 
 
 EXPOSE 5000
 # CMD ["python3", "/code/gls/app.py", "/code/gls/config-docker.yaml"]
-CMD ./startup-app.sh
+# CMD ["python3", "/code/gls/app.py", "-m", "docker"]
+
+ENV APP_EXE /code/gls/app.py
+ENV MODE docker
+
+ENTRYPOINT python3 $APP_EXE -m $MODE
+# CMD /code/startup-app.sh

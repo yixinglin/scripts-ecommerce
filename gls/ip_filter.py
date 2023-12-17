@@ -1,4 +1,4 @@
-from fnmatch import fnmatch, fnmatchcase
+from fnmatch import fnmatch
 from typing import List
 
 def isInWhiteList(ip, whitelist: List[str]):

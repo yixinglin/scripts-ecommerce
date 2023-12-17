@@ -2,15 +2,51 @@
 env: test 
 
 smtp:
-  host: smtp.example.com
+  host: smtp.example.de
   port: 465
-  password: ddn28310
-  address: lisa@example.net
-  username: Lisa
+  password: abcde
+  address: xyz@example.net
+  username: Newsletter
   security: "ssl/tls"
-  to_test_addrs: 
-    - "test@example.com"
-    - "test2@example.com"
+  to_test_addrs:
+    - "tom525@example.com"
+    -
+imap:
+  host: imap.example.de
 
-imap: 
-  host: imap.example.com
+# ========== Application
+send_later:
+  api: http://127.0.0.1:8090/newsletter
+  root: D:\data\temp\test\send-later  # Directory where eml files were stored.
+  actual_send: false
+  min_emails_per_hour: 200 #  (20).
+  max_emails_per_hour: 600 #  (60).
+  round_interval: 60  # in seconds (300).
+  delay_noise: 2  # in seconds
+
+log:
+  level: info  # info, debug, error, critical, warning
+  notification:
+    - "123456@example.com"
+  enabled_email_notification: true
+  Windows:
+    path: D:\data\cache\test\log
+  Linux:
+    path: /root/cache/test/log
+
+
+# ========== Web server
+server:
+  address: 0.0.0.0
+  port: 8090
+  admin_contact:
+    - "184059914@qq.com"
+  Linux:
+    cache: /root/cache/test/newsletter
+    temp: /root/temp/test/newsletter
+    db: /root/cache/test/db/newsletter.db
+
+  Windows:
+    cache: D:\data\cache\test\newsletter
+    temp: D:\data\temp\test\newsletter
+    db: D:\data\cache\test\db\newsletter.db

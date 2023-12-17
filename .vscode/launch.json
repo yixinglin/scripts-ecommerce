@@ -5,16 +5,17 @@
             "name": "Python: Flask",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "module": "flask",
+            "program":"${file}",
             "console": "integratedTerminal",
-            "justMyCode": true,
             "env": {
-                "FLASK_APP": "gls\\app.py",
+                "FLASK_APP": "emaillib/app_web.py",
+                "FLASK_DEBUG": "1"
             },
             "args": [
-                "gls\\config.yaml"
-            ]
+                "-m", "stage"
+            ],
+            "jinja": true,
+            "justMyCode": true,
         }
     ]
 }

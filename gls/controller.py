@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, abort
-import services 
-import glo 
-from glo import app
-import json 
-import services 
+import json
+import logging
+import os
 import traceback
-from ip_filter import isInWhiteList
+
+from flask import render_template, request, abort
 from werkzeug.exceptions import HTTPException
 
-import os 
+import glo
+import services
+from glo import app
+from ip_filter import isInWhiteList
 
 OS_TYPE = glo.OS_TYPE
 
@@ -16,9 +17,10 @@ OS_TYPE = glo.OS_TYPE
 @app.route('/gls/label', methods=['POST'])
 def gls_label():
     ip = getUserIp()
-    app.logger.info("REMOTE: " + ip)
+    logging.info("REMOTE: " + ip)
     shipment = request.form
-    app.logger.info(shipment.to_dict())
+    data = json.dumps(shipment.to_dict())
+    logging.info(data)
     label, isnew = services.glsLabel(shipment, addAdditionNote=True)
     return render_template("parcel_label.html", labels=label['labels'], parcels=label['parcels'], isnew=isnew)
 
@@ -64,10 +66,10 @@ def block_method():
     ip = getUserIp()
     conf = glo.getValue("conf")
     if (not isInWhiteList(ip, conf['ips']['whitelist'])):
-        app.logger.info(f"[THREAD] Unknown IP {ip} was blocked. [{request.method}] {request.url}")
+        logging.info(f"[THREAD] Unknown IP {ip} was blocked. [{request.method}] {request.url}")
         abort(403, "Your ip is not in the whitelist. Please contact the administrator for registration.")
     else:
-        app.logger.info(f"[THREAD] IP {ip} was approved. [{request.method}] {request.url}")
+        logging.info(f"[THREAD] IP {ip} was approved. [{request.method}] {request.url}")
 
 @app.errorhandler(Exception)
 def custom400(error):
@@ -75,7 +77,7 @@ def custom400(error):
         e = error
     else:
         e = traceback.format_exc()
-    app.logger.error(e)
+    logging.error(e)
     return render_template("500_generic.html", error=e, status_code=500), 500
 
 @app.errorhandler(404)

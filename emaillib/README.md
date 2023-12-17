@@ -1,3 +1,10 @@
+
+# Email Web Server
+## Updates: 
+1. Mark email as unsubscribed
+2. Get list of unsubscribed emails
+3. Add history
+
 # Email Application
 ## Updates: SMTP-Implementation (10.12.2023)
 1. Create a new project based on Python

@@ -8,6 +8,7 @@ import reportlab.lib.pagesizes as pagesizes
 from reportlab.lib.units import mm
 from PyPDF2 import PdfReader, PdfWriter
 from io import BytesIO
+from datetime import datetime 
 
 def base64decode_urlsafe(b64:str) ->str:
     return base64.urlsafe_b64decode(b64).decode("utf-8")
@@ -71,3 +72,9 @@ def getPdfPageSize(b64Pdf:str, index:int=0):
     pdf = PdfReader(bufferPdf)
     mediabox = pdf.pages[index].mediabox
     return (mediabox.width, mediabox.height)
+
+def current_time(format="%Y%m%d %H%M%S"):
+    return datetime.today().strftime(format)
+    
+def current_date(format=r"%Y%m%d"):
+    return datetime.datetime.today().strftime(format)

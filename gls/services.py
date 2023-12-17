@@ -1,9 +1,10 @@
-from gls import GLSApi
-import os 
-import json 
-import glo
-from glo import app 
+import json
+import logging
+import os
 from datetime import datetime
+
+import glo
+from gls import GLSApi
 
 PTH_PAYLOAD = "./gls/payload.json"
 OS_TYPE = glo.OS_TYPE
@@ -38,7 +39,7 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
     parent = f"{conf[OS_TYPE]['temp']}"
     filename = os.path.join(parent, f"gls-{payload['references'][0]}.json") 
     if os.path.exists(filename):
-        app.logger.info("[RESTORE]: " + filename)
+        logging.info("[RESTORE]: " + filename)
         with open(filename, 'r', encoding='utf-8') as f:
             resp = json.load(f) 
         isnew = False
@@ -47,7 +48,7 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
         resp = api.createParcelLabel(payload, note)
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(resp, f, ensure_ascii=False, indent=3)
-            app.logger.info("[SAVED] ORDER TO " + filename)
+            logging.info("[SAVED] ORDER TO " + filename)
         pth_csv = os.path.join(conf[OS_TYPE]['temp'], "gls.csv")
         note = note.replace("\n", " | ")
         cell = [datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC'),
@@ -58,7 +59,7 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
         line = ";".join(cell)
         with open(pth_csv, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
-            app.logger.info("[RECORDED] CSV: " + line)
+            logging.info("[RECORDED] CSV: " + line)
         isnew = True 
     return resp, isnew
     

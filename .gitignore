@@ -3,14 +3,13 @@ gls/config.yaml
 .vscode/settings.json
 *.pyc
 deploy*.bat
-gls/config-prod*.yaml
-gls/config-docker*.yaml
-gls/config-stage.yaml
+*/config-*.yaml
+*/config-*.yaml
 log.txt
 
-.vscode/launch.json
+.idea
 
-docker-compose.yml
+docker-compose*.yml
 
 js-test
 py-test

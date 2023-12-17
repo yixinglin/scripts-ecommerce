@@ -1,50 +1,32 @@
-import sys 
+import sys
+from logging.handlers import TimedRotatingFileHandler
+
 sys.path.append(".")
 import glo
 import controller
-glo._init()
 from glo import app
 import logging
-import yaml 
-from ip_filter import isInWhiteList
 import os 
-import platform
 
 OS_TYPE = glo.OS_TYPE
-  
-def setupLogger():
-    conf = glo.getValue("conf")
-    PARENT = conf[OS_TYPE]["cache"]
-    pth_log = os.path.join(PARENT, conf[OS_TYPE]["cache"], 'gls.log')
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout, datefmt  = '%Y-%m-%d %H:%M:%S',
-                        format="[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d] - %(message)s")
-    formatter = logging.Formatter(
-        "[%(asctime)s][%(filename)s:%(lineno)d][%(levelname)s][%(thread)d]: %(message)s")
-    fileHandler = logging.FileHandler(pth_log, encoding='UTF-8')
-    fileHandler.setLevel(logging.INFO) 
-    fileHandler.setFormatter(formatter)
-    app.logger.addHandler(fileHandler)
 
-def loadConfiguration(path):
-    with open(path, "r", encoding="utf-8") as f:
-        conf = yaml.load(f, Loader=yaml.FullLoader)
-    return conf 
+def setup_logger(log_file, level='info'):
+    lvd = dict(info=logging.INFO, debug=logging.DEBUG, warning=logging.WARNING, error=logging.ERROR, critical=logging.CRITICAL)
+    logging.basicConfig(level=lvd[level],
+                        handlers=[ logging.StreamHandler(),
+                                  TimedRotatingFileHandler(log_file, when='midnight', backupCount=180),
+                                  ],
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        format="[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d] - %(message)s")
 
 if __name__ == '__main__':
-    if (len(sys.argv) <= 1):
-        print("Please specify the configuration file.")
-        exit(1)
-    else: 
-        PTH_CONF = sys.argv[1]
-
-    conf = loadConfiguration(PTH_CONF)
-    os.makedirs(conf[OS_TYPE]["cache"], exist_ok=True)
+    conf = glo.conf
     os.makedirs(conf[OS_TYPE]["temp"], exist_ok=True)
-    glo.setValue("app", app)
-    glo.setValue("PTH_CONF", PTH_CONF)
-    glo.setValue("conf", conf)
-    setupLogger()
-    logging.info("CONF: " + PTH_CONF)
+    log_dir = os.path.join(conf[OS_TYPE]["cache"], "log")
+    os.makedirs(log_dir, exist_ok=True)
+    pth_log = os.path.join(log_dir, 'gls.log')
+    setup_logger(pth_log, 'info')
+    logging.info(conf)
     app.run(host=conf['server']['address'], 
             port=conf['server']['port'], 
             threaded=True, 

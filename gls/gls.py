@@ -1,4 +1,6 @@
-import glo 
+import logging
+
+import glo
 import base64
 import requests
 import json 
@@ -29,7 +31,7 @@ class GLSApi:
           
     def createParcelLabel(self, payload:dict, addictionText:str="") -> dict:
         postUrl = self.url + "/shipments"
-        self.app.logger.info("[GLS REQUEST]: " + postUrl)
+        logging.info("[GLS REQUEST]: " + postUrl)
         resp = requests.post(postUrl, headers=self.headers, json=payload) 
         if (resp.status_code == 201):
             parcel = json.loads(resp.text)
