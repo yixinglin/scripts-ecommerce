@@ -19,9 +19,9 @@ class TestEmailRestAPI:
 
     def __init__(self):
         debug = True
-        conf_path = os.path.join("emaillib", "config-dev.yaml")
+        conf_path = os.path.join("emaillib", "config-docker.yaml")
         conf = load_yaml(conf_path)
-        os.path.join(conf['log'][OS_TYPE]['path'])
+        # os.path.join(conf['log'][OS_TYPE]['path'])
         self.app = EmailApplication(conf_path, debug=debug)
         self.api = SendLatterRestApi(conf)
         nums = random.sample(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], 9)
@@ -60,18 +60,16 @@ class TestEmailRestAPI:
 
     def test_api_old_email(self):
         # Get email
-        target_email = "084539176@example.com"
+        target_email = "username11@example.com"
         print(":target_email ", target_email)
         res = self.api.registered_email(target_email).content
         encoded = base64encode_urlsafe(target_email)
         self.testcase.assertEqual(res['data'][0]['send_permitted'], True)
         self.testcase.assertEqual(res['data'][0]['encoded'], encoded)
 
-
-
 if __name__ == '__main__':
-    # unittest.main()
     a = TestEmailRestAPI()
     a.test_api_new_email()
     a.test_api_old_email()
     print("TestEmailRestAPI: Test Finish")
+    pass

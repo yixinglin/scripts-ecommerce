@@ -90,6 +90,6 @@ def custom500(error):
     return render_template("500_generic.html", error="Internal Server Error ", status_code=500), 500
 
 def connect_db():
-    conf = glo.getValue('conf')
-    return sqlite3.connect(conf['server'][OS_TYPE]['db'])
+    f_db = glo.getValue('f_db')
+    return sqlite3.connect(f_db)
 

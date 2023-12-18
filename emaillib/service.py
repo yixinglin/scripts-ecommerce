@@ -38,7 +38,7 @@ class NewLetterService:
         content = f"{email_addr} hat das Newsletter-Abonnement gekündigt."
         subject = "Kündigung des Newsletter-Abonnements"
         nofity_syserr(glo.emailNofity,
-                      glo.emailNofity.notify_admin_emails,
+                      glo.emailNofity.notify_admin_emails,      # Tell the sellers that customers have cancels subscription.
                       subject, content)
 
     def save_as_subscribed(self, email_addr: str):

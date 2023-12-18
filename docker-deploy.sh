@@ -1,6 +1,5 @@
 # Stop and remove the current containter.
-docker stop ecommerce
-docker rm ecommerce
+docker compose -f docker-compose-s.yml down
 
 # Build and replace the previous image.
 docker build --force-rm -t "yixing/ecommerce" .

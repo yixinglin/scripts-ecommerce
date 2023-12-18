@@ -21,8 +21,8 @@ def setup_logger(log_file, level='info'):
 
 if __name__ == '__main__':
     conf = glo.conf
-    os.makedirs(conf[OS_TYPE]["temp"], exist_ok=True)
     log_dir = os.path.join(conf[OS_TYPE]["cache"], "log")
+    os.makedirs(conf[OS_TYPE]["temp"], exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
     pth_log = os.path.join(log_dir, 'gls.log')
     setup_logger(pth_log, 'info')

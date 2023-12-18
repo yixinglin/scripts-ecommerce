@@ -2,12 +2,11 @@
 # python app_schedule --mode test
 # -a archive.txt -e to_send\ -l info.log --debug True
 import sys
+sys.path.append(".")
 from requests.exceptions import ConnectionError, Timeout
 from emaillib.rest.SendLatterRestApi import SendLatterRestApi
 
-sys.path.append(".")
-import argparse
-import os  
+import os
 from emaillib import *
 import logging
 from typing import List
@@ -15,10 +14,12 @@ from random import random, sample
 from common import decode_email_header, nofity_syserr
 import traceback
 import glo
-from glo import conf, conf_path
+from glo import conf, conf_path, OS_TYPE
 import time 
 
 
+pth_temp = os.path.join(conf['path'][OS_TYPE]['temp'], conf['env'], 'send-later')
+pth_log = os.path.join(conf['path'][OS_TYPE]['cache'], conf['env'], 'log')
 
 class SendLaterApplication: 
 
@@ -31,8 +32,8 @@ class SendLaterApplication:
         conf_path = app.conf_path 
         conf = load_yaml(conf_path)
         c_sendLater = conf['send_later']
-        self.eml_folder = os.path.join(c_sendLater['root'], 'eml') 
-        self.history_csv = os.path.join(c_sendLater['root'], "history.csv")
+        self.eml_folder = os.path.join(pth_temp, 'eml')
+        self.history_csv = os.path.join(pth_temp, "history.csv")
         os.makedirs(self.eml_folder, exist_ok=True)
 
         self.max_emails_per_hour = c_sendLater['max_emails_per_hour']
@@ -62,7 +63,7 @@ class SendLaterApplication:
         
         logging.info(f":{len(selected_emails_in_round)}/{n_emails_in_rest} emails was select in this round.")
         ans = dict(n_emails_in_rest=n_emails_in_rest, 
-                   n_selected_emails_in_round = len(selected_emails_in_round),
+                   n_selected_emails_in_round=len(selected_emails_in_round),
                    selected_emails_in_round=selected_emails_in_round)
         return ans 
         
@@ -77,6 +78,7 @@ class SendLaterApplication:
         self.app.print_message_headers(message)
         _, to_addrs = self.get_sender_receiver(message)
         is_sent_permitted = self.is_sent_permitted(message['To'])
+        is_subscribed = self.is_subscribed(message['To'])
         subject = decode_email_header(message['Subject'])
         if (is_sent_permitted):
             # unsub_link
@@ -86,15 +88,20 @@ class SendLaterApplication:
             sent += 1
             logging.info(f":Sent from [{from_addrs}] to {to_addrs}")
             # Archive email as sent
-            self.append_to_csv("sent", from_addrs, to_addrs, subject)
+            self.append_to_csv("sent", from_addrs, to_addrs, subject, is_subscribed)
+            self.app.save_to_mailbox(message)
         else: 
             logging.warning(f":Checked {to_addrs} has been archived or subscription of newsletters was canceled. "
                             f"No emails will be sent to this address currently.")
             from_addrs, to_addrs = self.get_sender_receiver(message)
-            self.append_to_csv("rejected", from_addrs, to_addrs, subject)
+            self.append_to_csv("rejected", from_addrs, to_addrs, subject, is_subscribed)
         # Delete email file.
-        fname = self.remove_email(eml_path)
-        logging.info(f":Deleted [{fname}]") 
+        if is_sent_permitted or not is_subscribed:
+            # The eml file should be deleted if
+            # 1. The email has been sent, or
+            # 2. The subscription has been canceled.
+            fname = self.remove_email(eml_path)
+            logging.info(f":Deleted [{fname}]")
         return sent 
             
     def run(self):
@@ -128,41 +135,46 @@ class SendLaterApplication:
             os.remove(pth)
             return pth
         return None 
-    
-    def is_sent_permitted(self, to_addr:str):
+
+    def get_registered_email(self, to_addr):
         to_addr = to_addr.strip()
         ls_email = self.api.registered_email(to_addr).content
         ls_email = ls_email['data']
         lem = list(filter(lambda o: o['addr'] == to_addr, ls_email))
         if (len(lem) > 0):
-            return lem[0]['send_permitted']
+            return lem[0]
         else:
+            return None
+    def is_sent_permitted(self, to_addr:str):
+        lem = self.get_registered_email(to_addr)
+        if lem:
+            return lem['send_permitted']
+        else: # No record in database means sent permitted
+            return True
+
+    def is_subscribed(self, to_addr:str):
+        lem = self.get_registered_email(to_addr)
+        if lem:
+            return not lem['unsubscribed']
+        else: # No record in database means subscribed
             return True
 
     def get_sender_receiver(self, message: Message):
         return message['From'], message['To'].split(',')
 
-    def append_to_csv(self, status:str, from_addr:str, to_addrs:List[str], subject:str):
+    def append_to_csv(self, status:str, from_addr:str, to_addrs:List[str], subject:str, subscribed):
         sentAt = current_time(format='%Y-%m-%d,%H:%M:%S')
         to_addrs = "|".join(to_addrs)
+        cancel = "subscribed" if subscribed else "canceled"
         with open(self.history_csv, 'a', encoding='utf-8') as fp:
-            line = ";".join([status, sentAt, from_addr, to_addrs, subject])
+            line = ";".join([status, cancel, sentAt, from_addr, to_addrs, subject])
             fp.write(line + '\n')
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("-m", "--mode", help="App mode", type=str, default=None)
-    # args = parser.parse_args()
-    # mode = args.mode
-    # if mode is not None:
-    #     conf_path = os.path.join("emaillib", f"config-{mode}.yaml")
-    # else:
-    #     conf_path = os.path.join("emaillib", f"config.yaml")
 
-    # conf = load_yaml(conf_path)
-    os.makedirs(os.path.join(conf['log'][glo.OS_TYPE]['path']), exist_ok=True)
-    log_path = os.path.join(conf['log'][glo.OS_TYPE]['path'], "email-send-later-app.log")
-    setup_logger(log_path, level=conf['log']['level'])
+    os.makedirs(pth_log, exist_ok=True)
+    f_log = os.path.join(pth_log, "email-send-later-app.log")
+    setup_logger(f_log, level=conf['log']['level'])
     logging.info(conf)
     debug = not conf['send_later']['actual_send']
     app = EmailApplication(conf_path, debug=debug)  # Email to send newsletter
