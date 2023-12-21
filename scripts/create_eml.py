@@ -1,10 +1,11 @@
 import sys
 sys.path.append(".")
-from email.message import Message, EmailMessage
+from email.message import Message
 import argparse
 from pylib.ioutils import base64encode_urlsafe
 from jinja2 import Environment, select_autoescape, FileSystemLoader, Template, StrictUndefined
 import os
+import html2eml
 
 class EmlTemplate:
 
@@ -33,12 +34,8 @@ class EmlTemplate:
         return self
 
     def build(self) -> Message:
-        # msg = MIMEMultipart('alternative')
-        msg = EmailMessage()
-        msg['From'] = self.from_addr
-        msg['To'] = self.to_addr
-        msg['Subject'] = self.subject
-        msg.set_content(self.html, subtype='html')
+        msg = html2eml.from_html(self.html, subject=self.subject,
+                                 to=self.to_addr, from_=self.from_addr)
         return msg
 
 
@@ -71,7 +68,7 @@ if __name__ == '__main__':
             .render(cancel=cancel)\
             .set_headers(from_addr=from_addr,
                          to_addr=to_addr, subject=subject).build()
-        # print(t)
+
         with open(os.path.join(out, f"{to_addr}.eml"), 'w', encoding="utf-8") as f:
             f.write(t.as_string())
 
