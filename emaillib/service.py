@@ -1,4 +1,5 @@
 from datetime import datetime
+from email.mime.text import MIMEText
 
 import glo
 from common import nofity_syserr
@@ -17,13 +18,14 @@ class NewLetterService:
         res = T_Email.query.filter_by(addr=email_addr, unsubscribed=True).count()
         return res > 0
 
-    def save_to_email(self, email_addr, subscribed=False, sentAt=None):
+    def save_to_email(self, email_addr, subscribed=False, sentAt=None, increment=0):
         unsubscribed = not subscribed
         instance = T_Email.query.filter_by(addr=email_addr).first()
         if instance:
             # Update if exists
             instance.unsubscribed = unsubscribed
             instance.updateAt = datetime.now()
+            instance.sentCount += increment
         else:
             # Insert if not exists
             instance = T_Email(email_addr, unsubscribed)
@@ -40,13 +42,20 @@ class NewLetterService:
         nofity_syserr(glo.emailNofity,
                       glo.emailNofity.notify_admin_emails,      # Tell the sellers that customers have cancels subscription.
                       subject, content)
+        # Save email to mailbox
+        mailbox_kun = self.conf['imap']['mailbox2']
+        msg = MIMEText(content)
+        msg['From'] = glo.emailNofity.from_addr
+        msg['To'] = "test@example.com"
+        msg['Subject'] = subject
+        glo.emailNofity.save_to_mailbox(msg, mailbox_kun)
 
     def save_as_subscribed(self, email_addr: str):
         self.save_to_email(email_addr, subscribed=True)
 
     def save_as_sent(self, email_addr: str):
         if not self.is_unsubscribed(email_addr=email_addr):
-            self.save_to_email(email_addr, subscribed=True, sentAt=datetime.now())
+            self.save_to_email(email_addr, subscribed=True, sentAt=datetime.now(), increment=1)
         else:
             raise RuntimeError("Your costomer has been unsubscribed your newsletter.")
 
@@ -62,7 +71,7 @@ class NewLetterService:
             unsubLink = f"{self.host}/newsletter/unsub?em={encoded}"
             d = dict(addr=em.addr, unsubscribed=em.unsubscribed, updateAt=em.updateAt,
                      lastSentAt=lastSentAt, encoded=encoded, send_permitted=send_permitted,
-                     unsubLink=unsubLink)
+                     unsubLink=unsubLink, sentCount=em.sentCount)
             lines.append(d)
         return lines
 

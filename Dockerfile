@@ -6,7 +6,7 @@ ADD . /code
 WORKDIR /code 
 # Install dependencies
 RUN --mount=type=cache,target=/root/.cache pip install Flask Flask-SQLAlchemy APScheduler \
-     flask_cors pyyaml requests Werkzeug reportlab PyPDF2 
+     flask_cors pyyaml requests Werkzeug reportlab PyPDF2 html2eml
 
 EXPOSE 5000
 

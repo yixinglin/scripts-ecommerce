@@ -21,7 +21,7 @@ class T_Email(db.Model):
     def __init__(self, addr, unsubscribed):
         self.id = None
         self.addr = addr
-        self.latestSentAt = datetime.today() -  timedelta(days=365)
+        self.latestSentAt = datetime.today() - timedelta(days=365)
         self.sentCount = 0
         self.unsubscribed = unsubscribed
         self.updateAt = datetime.now()

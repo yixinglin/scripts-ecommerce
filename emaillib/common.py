@@ -11,6 +11,7 @@ from email.parser import BytesParser
 from typing import List
 import yaml
 
+from pylib.exceptions import InvalidEmailAddress
 from pylib.httputils import check_email_address
 
 
@@ -30,7 +31,7 @@ class SmtpEmail:
 
         for a in to_addrs:
             if not (check_email_address(self.from_addr) and check_email_address(a)):
-                raise RuntimeError(f"Invalid Email Address: from {self.from_addr} to {self.to_addrs}")
+                raise InvalidEmailAddress(self.to_addrs, f"Invalid Email Address: from {self.from_addr} to {self.to_addrs}")
         if username == None or username == "":
             message.replace_header("From", self.from_addr)
         else:
@@ -170,11 +171,11 @@ class EmailApplication:
             logging.debug(f"DEBUG sent FROM {message['From']} TO {message['To']}")
         return message
 
-    def save_to_mailbox(self, message:Message, mailbox=None):
-        if mailbox is None:
-            self.imap.append(message, mailbox)
+    def save_to_mailbox(self, message:Message, mailbox_=None):
+        if mailbox_ is None:
+            self.imap.append(message, flags="", mailbox=self.mailbox)
         else:
-            self.imap.append(message, mailbox)
+            self.imap.append(message, flags="", mailbox=mailbox_)
 
     def test(self, message: Message):
         self.send(message, self.to_test_addrs) 
@@ -183,6 +184,8 @@ class EmailApplication:
         print("============= Message Headers ============")
         for item in message.items(): print(f"{item[0]}: {item[1]}")
         print("------------------------------------")
+
+
 
     
 def nofity_syserr(app:EmailApplication, to_addrs:List[str], subject:str, text:str):
