@@ -1,5 +1,6 @@
 import logging
 import time
+from email.utils import formatdate
 from logging.handlers import TimedRotatingFileHandler
 import smtplib
 import imaplib
@@ -159,6 +160,8 @@ class EmailApplication:
     def create_message_from_eml(self, eml_path:str):
         with open(eml_path, 'rb') as f:
             message = BytesParser().parse(f)
+            del message['Date']
+            message['Date'] = formatdate(localtime=True)
         return message
         
     def send(self, message: Message, to_addrs: List[str]) -> Message:

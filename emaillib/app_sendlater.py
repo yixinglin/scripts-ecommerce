@@ -93,7 +93,6 @@ class SendLaterApplication:
         sent = 0
         # Sent email
         message = self.app.create_message_from_eml(eml_path)
-        # self.app.print_message_headers(message)
         _, to_addrs = self.get_sender_receiver(message)
         res = self.get_email_status(message['To']) # Access API
         is_sent_permitted = res['is_sent_permitted']
@@ -108,12 +107,12 @@ class SendLaterApplication:
             # Archive email as sent
             self.app.save_to_mailbox(message)
             from_addrs, to_addrs = self.get_sender_receiver(message)
-            self.append_to_csv("sent", from_addrs, to_addrs, subject, is_subscribed, count)
+            self.append_to_csv("sent", from_addrs, to_addrs, subject, is_subscribed, count+1)
             sent += 1
             logging.info(f":Sent from [{from_addrs}] to {to_addrs}")
         else: 
             logging.warning(f":Checked {to_addrs} has been archived or subscription of newsletters was canceled. "
-                            f"No emails will be sent to this address currently.")
+                            f"No emails will be sent to this address currently. cancel={not is_subscribed}, sent_permitted={is_sent_permitted}.")
             from_addrs, to_addrs = self.get_sender_receiver(message)
             self.append_to_csv("rejected", from_addrs, to_addrs, subject, is_subscribed, count)
         # Delete email file.
@@ -150,6 +149,8 @@ class SendLaterApplication:
                 logging.error(e)
                 self.remove_email(pth)
                 logging.info(f":Deleted [{pth}]")
+                time.sleep(120)
+                continue
             logging.info(f":Delay {self.round_interval: .1f} seconds.")
             time.sleep(self.round_interval)
 

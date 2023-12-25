@@ -1,11 +1,10 @@
-from glo import conf, OS_TYPE
-from web_init import db
+from emaillib import glo
+from web_init import db, f_db
 from sqlalchemy.sql import func
 from sqlalchemy import DateTime, Column
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-import os 
 import shutil 
 
 class T_Email(db.Model):
@@ -27,9 +26,10 @@ class T_Email(db.Model):
         self.updateAt = datetime.now()
 
 def backup_database():
-    pth1 = conf['server'][OS_TYPE]['db']
+    pth1 = f_db
     saveOn = datetime.today().strftime('%Y%m%d')
     fname = f"{pth1}.{saveOn}"
+    print(fname)
     shutil.copy(pth1, fname)
     print(fname)
 

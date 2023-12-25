@@ -62,7 +62,8 @@ class NewLetterService:
     def get_list_registered_email(self):
         res = T_Email.query.all()
         lines = []
-        freq = 3600 * 24  # Sending frequency
+        day_limit = 5  # No email to send in N days.
+        freq = 3600 * 24 * day_limit  # Sending frequency in seconds.
         for em in res:
             encoded = base64encode_urlsafe(em.addr)
             lastSentAt = em.latestSentAt

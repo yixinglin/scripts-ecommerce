@@ -16,3 +16,4 @@ if __name__ == '__main__':
     eapp.imap.append(msg, flags='')
     # smtplib.SMTPRecipientsRefused
     eapp.send(msg, ["184059914example.com"])
+

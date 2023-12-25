@@ -18,7 +18,7 @@ def test_watermark():
     props = DocumentProperties()
     props.title = "028-2162491-7793901"
     props.subject = "GLS-parcel"
-    props['data'] = json.dumps(dict(orderId = "028-2162491-779是3901", trackingId=None), ensure_ascii=False)
+    props['data'] = json.dumps(dict(orderId = "028-2162491-7793901", trackingId=None))
     ret = setPdfDocumentProperties(ret, props)
     with open(path + r"\res.pdf", 'wb') as f:
         f.write(base64ToPdf(ret))

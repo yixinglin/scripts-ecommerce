@@ -39,21 +39,21 @@ def ad_sent():
     return "sent"
 
 
-@app.route('/newsletter/registered', methods=['POST'])
-def get_list_registered_email():
-    logging.info(f":list_unsubscribed") 
-    data = request.json
-    username = data.get("username").strip()
-    password = data.get("password").strip()
-    print(username, password)
-    if username == "admin-newsletter" and password == "uFwdsi9":
-        service = NewLetterService()
-        reg = service.get_list_registered_email()
-        res = dict(data=reg, total=len(reg))
-        return res
-    else: 
-        logging.error(f":AuthErr: username or password is incorrect. {username} {password}")
-        raise abort(404)
+# @app.route('/newsletter/registered', methods=['POST'])
+# def get_list_registered_email():
+#     logging.info(f":list_unsubscribed")
+#     data = request.json
+#     username = data.get("username").strip()
+#     password = data.get("password").strip()
+#     print(username, password)
+#     if username == "admin-newsletter" and password == "uFwdsi9":
+#         service = NewLetterService()
+#         reg = service.get_list_registered_email()
+#         res = dict(data=reg, total=len(reg))
+#         return res
+#     else:
+#         logging.error(f":AuthErr: username or password is incorrect. {username} {password}")
+#         raise abort(404)
 
 @app.route('/newsletter/registered', methods=['GET'])
 def get_register_email():
