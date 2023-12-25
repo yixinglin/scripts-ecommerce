@@ -102,7 +102,7 @@ def setup_logger(log_file, level='info'):
     lvd = dict(info=logging.INFO, debug=logging.DEBUG, warning=logging.WARNING, error=logging.ERROR, critical=logging.CRITICAL)
     logging.basicConfig(level=lvd[level], 
                         handlers=[logging.StreamHandler(),
-                                  TimedRotatingFileHandler(log_file, when='midnight', backupCount=180),
+                                  TimedRotatingFileHandler(log_file, when='midnight', backupCount=180, encoding='utf-8'),
                                   ],
                         datefmt='%Y-%m-%d %H:%M:%S',
                         format="[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d] - %(message)s")
