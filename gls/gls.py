@@ -43,9 +43,9 @@ class GLSApi:
             props.title = payload['references'][0]
             props.subject = "GLS Parcel Label"
             props['id'] = payload['references'][0]
-            props['addresses'] = json.dumps(payload['addresses'])
-            props['parcels'] = json.dumps(payload['parcels'])
-            # parcelWithWatermark = setPdfDocumentProperties(parcelWithWatermark, props)
+            props['addresses'] = json.dumps(payload['addresses'], ensure_ascii=False)
+            props['parcels'] = json.dumps(payload['parcels'], ensure_ascii=False)
+            parcelWithWatermark = setPdfDocumentProperties(parcelWithWatermark, props)
             # Modify result from gls
             parcel['labels'][0] = parcelWithWatermark
             return parcel
