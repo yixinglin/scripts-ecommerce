@@ -50,7 +50,7 @@ class SmtpEmail:
         server.login(self.address, self.password)
         return server
 
-    def send(self, message:Message):
+    def send(self, message: Message):
         with self.login() as server:
             server.sendmail(self.from_addr, self.to_addrs, 
                             message.as_string())
@@ -74,9 +74,11 @@ class ImapEmail:
             raise ValueError("Wrong imap_security method.")
         server.login(self.address, self.password)
         return server
-    def append(self, message:Message, flags='\\Seen', mailbox=None):
+
+    def append(self, message: Message, flags='\\Seen', mailbox=None):
         if mailbox is None:
             mailbox = self.mailbox
+
         with self.login() as server:
             ans = server.append(mailbox, flags,
                       imaplib.Time2Internaldate(time.time()),
@@ -160,13 +162,12 @@ class EmailApplication:
     def create_message_from_eml(self, eml_path:str):
         with open(eml_path, 'rb') as f:
             message = BytesParser().parse(f)
-            del message['Date']
-            message['Date'] = formatdate(localtime=True)
         return message
         
     def send(self, message: Message, to_addrs: List[str]) -> Message:
         message = self.smtp.setup_message(self.username, self.from_addr, 
-                                to_addrs, message)        
+                                to_addrs, message)
+        self.update_date_to_message(message)
         if not self.debug:
             logging.info(f"Actual send FROM {message['From']} TO {message['To']}")
             self.smtp.send(message) 
@@ -174,13 +175,15 @@ class EmailApplication:
             logging.debug(f"DEBUG sent FROM {message['From']} TO {message['To']}")
         return message
 
-    def save_to_mailbox(self, message:Message, mailbox_=None):
+    def save_to_mailbox(self, message: Message, mailbox_=None):
+        self.update_date_to_message(message)
         if mailbox_ is None:
             self.imap.append(message, flags="", mailbox=self.mailbox)
         else:
             self.imap.append(message, flags="", mailbox=mailbox_)
 
     def test(self, message: Message):
+        self.update_date_to_message(message)
         self.send(message, self.to_test_addrs) 
 
     def print_message_headers(self, message):
@@ -188,7 +191,9 @@ class EmailApplication:
         for item in message.items(): print(f"{item[0]}: {item[1]}")
         print("------------------------------------")
 
-
+    def update_date_to_message(self, message: Message):
+        del message['Date']
+        message['Date'] = formatdate(localtime=True)
 
     
 def nofity_syserr(app:EmailApplication, to_addrs:List[str], subject:str, text:str):

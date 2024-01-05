@@ -112,7 +112,7 @@ class SendLaterApplication:
             logging.info(f":Sent from [{from_addrs}] to {to_addrs}")
         else: 
             logging.warning(f":Checked {to_addrs} has been archived or subscription of newsletters was canceled. "
-                            f"No emails will be sent to this address currently. cancel={not is_subscribed}, sent_permitted={is_sent_permitted}.")
+                            f"No emails will be sent to this address currently. canceled={not is_subscribed}, sent_permitted={is_sent_permitted}.")
             from_addrs, to_addrs = self.get_sender_receiver(message)
             self.append_to_csv("rejected", from_addrs, to_addrs, subject, is_subscribed, count)
         # Delete email file.
@@ -191,7 +191,7 @@ class SendLaterApplication:
         return message['From'], message['To'].split(',')
 
     def append_to_csv(self, status:str, from_addr:str, to_addrs:List[str], subject:str, subscribed, count):
-        sentAt = current_time(format='%Y-%m-%d,%H:%M:%S')
+        sentAt = current_time(format_='%Y-%m-%d,%H:%M:%S')
         to_addrs = "|".join(to_addrs)
         cancel = "subscribed" if subscribed else "canceled"
         with open(self.history_csv, 'a', encoding='utf-8') as fp:
