@@ -7,7 +7,7 @@ import json
 from typing import List, Dict
 import platform
 from pylib.ioutils import *
-
+import copy
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
@@ -82,7 +82,12 @@ class GLSApi:
         payload["addresses"]["delivery"]["zipCode"] = zipCode
         payload["addresses"]["delivery"]["email"] = email
         payload["addresses"]["delivery"]["phone"] = phone
-        payload["parcels"] = parcels
+        tmp_parcel = payload["parcels"][0]  # Get template
+        dic_parcels = []
+        for i, dic in enumerate(parcels):
+            tmp_parcel.update(dic)  # Fill up template
+            dic_parcels.append(copy.deepcopy(tmp_parcel)) # append to list
+        payload["parcels"] = dic_parcels
         return payload
 
     def checkNameLength(self, names: List[str]):

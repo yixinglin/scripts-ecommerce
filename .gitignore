@@ -9,7 +9,7 @@ log.txt
 
 .idea
 
-docker-compose*.yml
+# docker-compose*.yml
 
 js-test
 py-test

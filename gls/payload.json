@@ -18,7 +18,12 @@
     "parcels": [
         {
             "weight": 1,
-            "comment": "Note 1@Test"
+            "comment": "Note 1@Test",
+            "services" :[
+                {
+                    "name" : "flexdeliveryservice"
+                }
+            ]
         }
         
     ]

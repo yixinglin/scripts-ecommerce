@@ -33,7 +33,7 @@ def buildAPI() -> GLSApi:
     # }
 def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
     conf = glo.getValue("conf")
-    app = glo.getValue("app")
+    # app = glo.getValue("app")
     api = buildAPI()
     payload = amazonShipment(shipment, api)
     parent = f"{conf[OS_TYPE]['temp']}"
@@ -65,7 +65,6 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
     
 # Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
-     # note = shipment["note"].strip()
     parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
     payload = api.fillForm(reference=shipment["orderNumber"], 
                            name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 

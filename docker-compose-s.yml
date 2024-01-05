@@ -1,0 +1,37 @@
+# Ecommerce Server
+version: '3.3'
+services:
+    ecommerce-gls_s:
+        container_name: ecommerce-gls_s
+        restart: always
+        network_mode: host
+        image: yixing/ecommerce
+        volumes: &default-volumes
+            - /root/hansagt/ecommerce:/code
+            - /root/hansagt/cache:/cache
+            - /root/hansagt/temp:/temp
+        environment:
+            - PY_APP=gls/app.py
+            - MODE=docker     # Mode: docker, docker-test
+
+    # Send later
+    ecommerce-sl_s:
+        container_name: ecommerce-sl_s
+        restart: always
+        network_mode: host
+        image: yixing/ecommerce
+        volumes: *default-volumes
+        environment: 
+            - PY_APP=emaillib/app_web.py
+            - MODE=docker   # Mode: docker, docker-test
+
+    ecommerce-sl_c:
+        container_name:  ecommerce-sl_c
+        # restart: always
+        network_mode: host
+        image: yixing/ecommerce
+        volumes: *default-volumes
+        environment:
+            - PY_APP=emaillib/app_sendlater.py
+            - MODE=docker   # Mode: docker, docker-test
+
