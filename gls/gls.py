@@ -8,6 +8,9 @@ from typing import List, Dict
 import platform
 from pylib.ioutils import *
 import copy
+
+from pylib.stringutils import is_empty_text
+
 PTH_PAYLOAD = "./gls/payload.json"
 PTH_CONF = "./gls/config.yaml"
 OS_TYPE = platform.system()
@@ -62,7 +65,7 @@ class GLSApi:
         return b64out
 
     def fillForm(self, reference, name1, name2, name3,
-                 street, city, zipCode, province, country, email, phone, parcels: List[Dict]):
+                 street, city, zipCode, province, country, email, mobile, parcels: List[Dict]):
         name1, name2, name3 = self.adjustNameFields(name1, name2, name3)
         passed = self.checkNameLength([name1, name2, name3])
         if (not passed):
@@ -81,13 +84,13 @@ class GLSApi:
         payload["addresses"]["delivery"]["city"] = city
         payload["addresses"]["delivery"]["zipCode"] = zipCode
         payload["addresses"]["delivery"]["email"] = email
-        payload["addresses"]["delivery"]["phone"] = phone
-        tmp_parcel = payload["parcels"][0]  # Get template
-        dic_parcels = []
-        for i, dic in enumerate(parcels):
-            tmp_parcel.update(dic)  # Fill up template
-            dic_parcels.append(copy.deepcopy(tmp_parcel)) # append to list
-        payload["parcels"] = dic_parcels
+        payload["addresses"]["delivery"]["mobile"] = mobile
+        fds = {"name": "flexdeliveryservice"}
+
+        for i, p in enumerate(parcels):
+            if not is_empty_text(email) or not is_empty_text(mobile):
+                p['services'] = [fds]
+        payload["parcels"] = parcels
         return payload
 
     def checkNameLength(self, names: List[str]):

@@ -26,7 +26,7 @@ def buildAPI() -> GLSApi:
     #     "name2": None,
     #     "name3": None,
     #     "note": "1x FBM Hotgen 39er",
-    #     "phone": 123456
+    #     "mobile": 123456
     #     "email": abc@gmail.com
     #     "pages": 2
     #     "orderNumber": "028-7752738-0461157"
@@ -66,11 +66,11 @@ def glsLabel(shipment: dict, addAdditionNote=False) -> dict:
 # Mapping from amazon to gls payload
 def amazonShipment(shipment, api: GLSApi) -> dict:
     parcels = [{"weight": 1, "comment": ""}]*int(shipment['pages'].strip())
-    payload = api.fillForm(reference=shipment["orderNumber"], 
-                           name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"], 
-                           street=shipment["street"] + " " +shipment["houseNumber"], 
-                           city=shipment["city"], zipCode=shipment["zip"], 
+    payload = api.fillForm(reference=shipment["orderNumber"],
+                           name1 = shipment["name1"], name2 = shipment["name2"], name3=shipment["name3"],
+                           street=shipment["street"] + " " +shipment["houseNumber"],
+                           city=shipment["city"], zipCode=shipment["zip"],
                            province=shipment["state"],
-                           country=shipment["country"], email=shipment['email'], 
-                           phone=shipment["phone"], parcels=parcels)
+                           country=shipment["country"], email=shipment['email'],
+                           mobile=shipment["phone"], parcels=parcels)
     return payload

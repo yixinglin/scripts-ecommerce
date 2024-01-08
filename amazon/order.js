@@ -3,13 +3,15 @@
 
 var AmazonApi = {
     /**
-     * Get information from Amazon API
+     * Get customer information from Amazon API
      * @returns An Promise Object
      */
     fetchShipmentFromApi: function(orderNumber) {
         var blobUrl = `https://sellercentral.amazon.de/orders-api/order/${orderNumber}`;
         return makeGetRequest(blobUrl).then( res => {
             var data = JSON.parse(res);
+            var proxyEmail = data.order.buyerProxyEmail;
+            console.log(proxyEmail);
             var blob = data.order.blob;
             var payload = {"blobs": [blob]};
             var headers = {"Acccept": "application/json", "Content-Type": "application/json"}
