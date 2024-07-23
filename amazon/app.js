@@ -1,4 +1,6 @@
 
+console.log("app1: Amazon Order Application");
+
 class AmazonOrderApplication {
 
     constructor(dom, gls_host) {

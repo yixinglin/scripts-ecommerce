@@ -1,6 +1,6 @@
 
 
-console.log("app2 loaded")
+console.log("app2: AmazonOrderListApplication")
 
 class AmazonOrderListApplication {
 
