@@ -86,16 +86,17 @@ class EbayOrderApp {
 
     #extractOrderDetailsV1() {
         var shipment = {};
-        shipment.name1 = document.querySelector('[id^="nid-"][id$="-5"]').innerText;;
+        // shipment.name1 = document.querySelector('[id^="nid-"][id$="-5"]').innerText;;
+        shipment.name1 = this.#getFieldByTooltip("Namen kopieren");
         shipment.name2 = "";
         shipment.name3 = "";
-        shipment.city = document.querySelector('[id^="nid-"][id$="-2"]').innerText;;
+        shipment.city = this.#getFieldByTooltip("Ort kopieren");
         shipment.state= "";
-        shipment.zip = document.querySelector('[id^="nid-"][id$="-3"]').innerText;;
-        shipment.country = document.querySelector('[id^="nid-"][id$="-1"]').innerText;;
-        shipment.street = document.querySelector('[id^="nid-"][id$="-4"]').innerText;;
+        shipment.zip = this.#getFieldByTooltip("PLZ kopieren");
+        shipment.country = this.#getFieldByTooltip("Land/Region kopieren");
+        shipment.street = this.#getFieldByTooltip("Straße kopieren");
         shipment.houseNumber = "";
-        shipment.phone = document.querySelector('[id^="nid-"][id$="-0"]').innerText;;
+        shipment.phone = this.#getFieldByTooltip("In Zwischenablage kopieren");
         shipment.email = "";
         shipment.pages = 1;
         shipment.note = "";
@@ -115,5 +116,17 @@ class EbayOrderApp {
             this.#addTextTo("div.shipping-info div.line-actions", "Tracking Number: " + trackId, 'red');
         });
     }
-    
+
+    #getFieldByTooltip(text) {
+        const tooltips = document.querySelectorAll('.tooltip__mask');
+        for (let i = 0; i < tooltips.length; i++) {
+            const tooltip = tooltips[i];
+            const tooltipText = tooltip.innerText.trim();
+            if (tooltipText === text) {
+                const parent = tooltip.parentElement.parentElement;                
+                return parent.innerText.trim();
+            }
+        }
+        throw new Error("Could not find field with tooltip " + text);
+    }
 }
